@@ -28,6 +28,8 @@ We will be using the **Brain Tumor MRI Dataset** aggregated from multiple open-s
 ### c. Expected Models
 * **Baseline:** We will start with a **ResNet-18** backbone pre-trained on ImageNet, modifying the final fully connected layer to output 4 classes.
 * **Future/Experimental:** If the MLOps pipeline is stable, we may experiment with **EfficientNet-B0** for better parameter efficiency or explore **MONAI**-specific implementations (e.g., DenseNet121) tailored for healthcare imaging.
+<<<<<<< HEAD
+=======
 
 ## Project structure
 
@@ -80,3 +82,4 @@ The directory structure of the project looks like this:
 Created using [mlops_template](https://github.com/SkafteNicki/mlops_template),
 a [cookiecutter template](https://github.com/cookiecutter/cookiecutter) for getting
 started with Machine Learning Operations (MLOps).
+>>>>>>> s254311
