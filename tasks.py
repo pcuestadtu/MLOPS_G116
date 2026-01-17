@@ -71,3 +71,43 @@ def build_docs(ctx: Context) -> None:
 def serve_docs(ctx: Context) -> None:
     """Serve documentation."""
     ctx.run("mkdocs serve --config-file docs/mkdocs.yaml", echo=True, pty=not WINDOWS)
+
+
+@task
+def python(ctx):
+    """ prueba"""
+    ctx.run("which python" if os.name != "nt" else "where python")
+
+@task
+def git(ctx, message):
+    ctx.run(f"git add .")
+    ctx.run(f"git commit -m '{message}'")
+    ctx.run(f"git push")
+
+@task
+def conda(ctx, name: str = "mlops_g116"):
+    '''Create and set up a conda environment from environment.yml file.'''
+    ctx.run(f"conda env create -f environment.yml", echo=True)
+    ctx.run(f"conda activate {name}", echo=True)
+    ctx.run(f"pip install -e .", echo=True)
+
+#The two below are for dvc data version control (we will erase them later most probably)
+
+@task
+def dvc(ctx, folder="data", message="Add new data"):
+    '''Port data folder to dvc and push to remote storage.'''
+    ctx.run(f"dvc add {folder}")
+    ctx.run(f"git add {folder}.dvc .gitignore")
+    ctx.run(f"git commit -m '{message}'")
+    ctx.run(f"git push")
+    ctx.run(f"dvc push")
+
+""" No se exactamente que hacen dos de abajo """
+
+@task
+def pull_data(ctx):
+    ctx.run("dvc pull")
+
+@task(pull_data)
+def train(ctx):
+    ctx.run("my_cli train")
