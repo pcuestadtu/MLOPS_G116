@@ -74,5 +74,9 @@ def load_data():
 
     return train_set, test_set
 
+def main() -> None:
+    # Expose the preprocess function as a CLI using Typer
+    typer.run(preprocess)
+
 if __name__ == "__main__":
     typer.run(preprocess)

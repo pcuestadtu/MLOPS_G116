@@ -19,7 +19,7 @@ DEVICE = torch.device(
     else "cpu"
 )
 
-@hydra.main(config_path=".", config_name="config.yaml", version_base=None)
+@hydra.main(config_path="configs", config_name="config.yaml", version_base=None)
 def train(config) -> None:
     '''
     Train a neural network on the MNIST dataset and save the trained model
@@ -34,9 +34,9 @@ def train(config) -> None:
                     None: The function saves the trained model weights to disk
                           and stores training loss and accuracy plots.
     '''
+    hparams = config.hyperparameters
     print("Training day and night")
     print(f"{hparams.lr=}, {hparams.batch_size=}, {hparams.epochs=}")
-    hparams = config.hyperparameters
     torch.manual_seed(hparams.seed)
 
     # Initialize model and move it to the selected device (GPU/CPU)
@@ -112,8 +112,8 @@ def train(config) -> None:
 
 def main() -> None:
     # Expose the train function as a CLI using Typer
-    typer.run(train)
+    train()
 
 if __name__ == "__main__":
     # Expose the train function as a CLI using Typer
-    typer.run(train)
+    train()

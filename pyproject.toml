@@ -22,10 +22,12 @@ requires-python = ">=3.12"
 dynamic = ["dependencies", "optional-dependencies"]
 
 [project.scripts]
+data = "mlops_g116.data:main"
 train = "mlops_g116.train:main"
 evaluate = "mlops_g116.evaluate:main"
 visualize = "mlops_g116.visualize:main"
 main = "mlops_g116.main:app"
+train_hydra = "mlops_g116.train_hydra:main"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
