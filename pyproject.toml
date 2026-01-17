@@ -23,8 +23,9 @@ dynamic = ["dependencies", "optional-dependencies"]
 
 [project.scripts]
 train = "mlops_g116.train:main"
-evaluate = "project_test.evaluate:main"
-visualize = "project_test.visualize:main"
+evaluate = "mlops_g116.evaluate:main"
+visualize = "mlops_g116.visualize:main"
+main = "mlops_g116.main:app"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
