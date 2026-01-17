@@ -3,6 +3,7 @@ from PIL import Image
 import torch
 from torchvision import transforms
 from sklearn.model_selection import train_test_split
+import typer
 
 IMG_SIZE = 224  # Image size (IMG_ZISE x IMG_SIZE) 
 
@@ -13,10 +14,10 @@ transform = transforms.Compose([
 ])
 
 def normalize(images: torch.Tensor) -> torch.Tensor:
-    """Normaliza imágenes: media 0, std 1"""
+    """Normalizes images: mean 0, std 1"""
     return (images - images.mean()) / images.std()
 
-def preprocess_data(raw_dir: str = "data/raw/brain_dataset", processed_dir: str = "data/processed") -> None:
+def preprocess(raw_dir: str = "data/raw/brain_dataset", processed_dir: str = "data/processed") -> None:
     os.makedirs(processed_dir, exist_ok=True)
 
     images = []
@@ -24,7 +25,7 @@ def preprocess_data(raw_dir: str = "data/raw/brain_dataset", processed_dir: str 
 
     class_folders = sorted(os.listdir(raw_dir)) 
 
-    print("Cargando imágenes...")
+    print("Loading images...")
 
     for label, folder in enumerate(class_folders):
         folder_path = os.path.join(raw_dir, folder)
@@ -53,10 +54,10 @@ def preprocess_data(raw_dir: str = "data/raw/brain_dataset", processed_dir: str 
     torch.save(X_test, f"{processed_dir}/test_images.pt")
     torch.save(y_test, f"{processed_dir}/test_target.pt")
 
-    print("Datos procesados y guardados en", processed_dir)
+    print("Data processed and saved in", processed_dir)
 
 def load_data():
-    """Carga dataset procesado y devuelve TensorDataset para PyTorch"""
+    """Loads dataset processed and returns TensorDataset for PyTorch"""
     train_images = torch.load("data/processed/train_images.pt")
     train_target = torch.load("data/processed/train_target.pt")
     test_images = torch.load("data/processed/test_images.pt")
@@ -68,4 +69,4 @@ def load_data():
     return train_set, test_set
 
 if __name__ == "__main__":
-    preprocess_data()
+    typer.run(preprocess())
