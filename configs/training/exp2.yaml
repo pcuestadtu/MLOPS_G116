@@ -2,5 +2,5 @@
 hyperparameters:
   batch_size: 100
   lr: 1e-4
-  epochs: 20
+  epochs: 3
   seed: 123

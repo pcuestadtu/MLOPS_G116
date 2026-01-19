@@ -183,3 +183,4 @@ cython_debug/
 *:Zone.Identifier
 google-cloud-sdk/
 google-cloud-sdk-*.tar.gz
+outputs/

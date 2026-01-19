@@ -1,5 +1,6 @@
 import cProfile
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -30,7 +31,8 @@ DEVICE = torch.device(
     else "cpu"
 )
 
-@hydra.main(config_path="../../configs", config_name="config.yaml", version_base=None)
+CONFIG_DIR = Path(__file__).resolve().parents[2] / "configs"
+@hydra.main(config_path=str(CONFIG_DIR), config_name="config.yaml", version_base=None)
 def train(config) -> None:
     '''
     Train a neural network on the MNIST dataset and save the trained model
@@ -227,14 +229,22 @@ def train(config) -> None:
     fig.savefig(figure_dir / "training_statistics.png")
     profiler.disable()
     profiler.dump_stats(profile_path)
-    try:
-        subprocess.Popen([sys.executable, "-m", "snakeviz", str(profile_path)], check=False)
-    except FileNotFoundError:
-        logger.warning("snakeviz is not installed; skipping profiler visualization.")
-    try:
-        subprocess.Popen([sys.executable, "-m", "tensorboard", "--logdir", str(output_dir)])
-    except (FileNotFoundError, OSError):
-        logger.warning("tensorboard is not available; skipping automatic launch.")
+    run_snakeviz = os.getenv("RUN_SNAKEVIZ", "1") == "1"
+    run_tensorboard = os.getenv("RUN_TENSORBOARD", "1") == "1"
+    if run_snakeviz:
+        try:
+            subprocess.Popen([sys.executable, "-m", "snakeviz", str(profile_path)])
+        except FileNotFoundError:
+            logger.warning("snakeviz is not installed; skipping profiler visualization.")
+    if run_tensorboard:
+        tensorboard_cmd = shutil.which("tensorboard")
+        try:
+            if tensorboard_cmd:
+                subprocess.Popen([tensorboard_cmd, "--logdir", str(output_dir)])
+            else:
+                subprocess.Popen([sys.executable, "-m", "tensorboard.main", "--logdir", str(output_dir)])
+        except (FileNotFoundError, OSError):
+            logger.warning("tensorboard is not available; skipping automatic launch.")
     wandb.finish()
 
 def main() -> None:
