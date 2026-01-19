@@ -114,3 +114,6 @@ def train(ctx):
 
 ## Create task to process git (add, commit, push del main y meva branca)
 ## Tambe crear tasca per pull cloud
+## crear tasca per service account de google cloud i baixar les credencials
+## Modificar tasca dvc (nom arxiu raw.dvc)
+## Valorar si crear tasca per modul 20 (instalar gcloud sdk i autenticar)

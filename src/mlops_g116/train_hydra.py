@@ -30,7 +30,7 @@ DEVICE = torch.device(
     else "cpu"
 )
 
-@hydra.main(config_path="configs", config_name="config.yaml", version_base=None)
+@hydra.main(config_path="../../configs", config_name="config.yaml", version_base=None)
 def train(config) -> None:
     '''
     Train a neural network on the MNIST dataset and save the trained model
@@ -228,7 +228,7 @@ def train(config) -> None:
     profiler.disable()
     profiler.dump_stats(profile_path)
     try:
-        subprocess.run([sys.executable, "-m", "snakeviz", str(profile_path)], check=False)
+        subprocess.Popen([sys.executable, "-m", "snakeviz", str(profile_path)], check=False)
     except FileNotFoundError:
         logger.warning("snakeviz is not installed; skipping profiler visualization.")
     try:
