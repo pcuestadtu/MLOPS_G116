@@ -181,6 +181,9 @@ cython_debug/
 #.idea/
 /data
 
+#Ignore temporal folder
+/temporal
+
 .devcontainer/default.json
 
 *:Zone.Identifier
