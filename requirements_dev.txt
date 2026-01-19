@@ -21,3 +21,6 @@ snakeviz==2.2.0
 tensorboard==2.20.0
 
 pandas==2.2.2
+
+#testing
+pytest==9.0.2
