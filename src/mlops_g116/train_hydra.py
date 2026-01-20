@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import RocCurveDisplay, accuracy_score, f1_score, precision_score, recall_score
 import torch
 import wandb
+from google.cloud import storage
 try:
     from dotenv import load_dotenv
 except ModuleNotFoundError:
@@ -35,6 +36,67 @@ DEVICE = torch.device(
 )
 
 CONFIG_DIR = Path(__file__).resolve().parents[2] / "configs"
+DEFAULT_OUTPUT_BUCKET = "mlops116"
+
+
+def _resolve_output_prefix(output_dir: Path, output_root_env: str | None) -> str:
+    """Resolve a GCS prefix for a run output directory.
+
+    Args:
+        output_dir: The run output directory on disk.
+        output_root_env: Optional OUTPUT_ROOT environment variable value.
+
+    Returns:
+        A GCS prefix to use for uploads.
+    """
+    if output_root_env:
+        output_root = Path(output_root_env).resolve()
+        try:
+            relative = output_dir.relative_to(output_root)
+            return f"outputs/{relative.as_posix()}"
+        except ValueError:
+            pass
+    cwd = Path.cwd()
+    try:
+        relative = output_dir.relative_to(cwd)
+        return relative.as_posix()
+    except ValueError:
+        pass
+    if "outputs" in output_dir.parts:
+        idx = output_dir.parts.index("outputs")
+        return "/".join(output_dir.parts[idx:])
+    return f"outputs/{output_dir.name}"
+
+
+def _upload_outputs_to_gcs(output_dir: Path, bucket_name: str, prefix: str) -> None:
+    """Upload run outputs to a GCS bucket.
+
+    Args:
+        output_dir: Directory containing run outputs.
+        bucket_name: Target GCS bucket name.
+        prefix: Prefix within the bucket to store outputs.
+    """
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    normalized_prefix = prefix.strip("/")
+    base_prefix = f"{normalized_prefix}/" if normalized_prefix else ""
+    for path in output_dir.rglob("*"):
+        if path.is_file():
+            rel_path = path.relative_to(output_dir).as_posix()
+            blob = bucket.blob(f"{base_prefix}{rel_path}")
+            blob.upload_from_filename(str(path))
+
+
+def _cleanup_output_dir(output_dir: Path) -> None:
+    """Remove run outputs and delete empty parent directories."""
+    shutil.rmtree(output_dir, ignore_errors=True)
+    parent = output_dir.parent
+    while parent != parent.parent:
+        try:
+            parent.rmdir()
+        except OSError:
+            break
+        parent = parent.parent
 
 
 def _pick_available_port(preferred_port: int, max_tries: int = 10) -> int:
@@ -274,7 +336,8 @@ def train(config) -> None:
     logger.info("Training complete")
 
     # Save trained model parameters to disk
-    torch.save(model.state_dict(), model_dir / "model.pth")
+    model_path = model_dir / "model.pth"
+    torch.save(model.state_dict(), model_path)
     if final_preds is not None and final_targets is not None:
         final_pred_labels = final_preds.argmax(dim=1)
         final_accuracy = accuracy_score(final_targets.numpy(), final_pred_labels.numpy())
@@ -316,7 +379,6 @@ def train(config) -> None:
         else:
             target_path = f"{registry_name}/{collection_name}"
         wandb_run.link_artifact(artifact, target_path=target_path, aliases=["latest"])
-
     # Plot training loss and accuracy
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     axs[0].plot(statistics["train_loss"])
@@ -339,6 +401,14 @@ def train(config) -> None:
     if run_tensorboard:
         preferred_port = int(os.getenv("TENSORBOARD_PORT", "6006"))
         _launch_tensorboard(output_dir, preferred_port, open_tensorboard)
+    output_bucket = os.getenv("OUTPUT_GCS_BUCKET", DEFAULT_OUTPUT_BUCKET)
+    output_prefix = _resolve_output_prefix(output_dir, os.getenv("OUTPUT_ROOT"))
+    try:
+        _upload_outputs_to_gcs(output_dir, output_bucket, output_prefix)
+        logger.info(f"Uploaded outputs to gs://{output_bucket}/{output_prefix}")
+        _cleanup_output_dir(output_dir)
+    except Exception as exc:
+        logger.warning(f"Failed to upload outputs to GCS: {exc}")
     wandb.finish()
 
 def main() -> None:

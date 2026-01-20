@@ -9,18 +9,16 @@ WORKDIR /app
 
 COPY src src/
 COPY configs configs/
-COPY .dvc/config .dvc/config
-COPY data/*.dvc data/
+COPY data/processed data/processed
 COPY requirements.txt requirements.txt
 COPY README.md README.md
 COPY pyproject.toml pyproject.toml
-COPY dockerfiles/train_entrypoint.sh /usr/local/bin/train_entrypoint.sh
+COPY dockerfiles/train_local_entrypoint.sh /usr/local/bin/train_entrypoint.sh
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.txt --verbose
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install . --no-deps --verbose
-RUN dvc config core.no_scm true
 
 RUN chmod +x /usr/local/bin/train_entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/train_entrypoint.sh"]

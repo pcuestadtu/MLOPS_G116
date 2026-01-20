@@ -19,3 +19,7 @@ command:
   - ${interpreter}
   - -m
   - mlops_g116.train_hydra
+  - --config-path
+  - configs
+  - --config-name
+  - config.yaml
