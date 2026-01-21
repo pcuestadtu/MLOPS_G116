@@ -30,6 +30,12 @@ jobs:
           pip install -r requirements_dev.txt
           pip list
 
+      - uses: iterative/setup-dvc@v1
+      - name: Get data
+        run: dvc pull
+        env:
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
       - name: Pull data
         run: dvc pull
 
