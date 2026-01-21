@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1.4
 FROM python:3.12-slim AS base
 
+ARG GOOGLE_CLOUD_PROJECT
+ENV GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+
 RUN apt update && \
     apt install --no-install-recommends -y build-essential gcc && \
     apt clean && rm -rf /var/lib/apt/lists/*
