@@ -10,7 +10,7 @@ parameters:
     max: 0.01
     distribution: log_uniform
   model:
-    values: [simple, resnet18]
+    values: [simple, resnet18, densenet121]
   optimizer:
     values: [adam, sgd]
   batch_size:

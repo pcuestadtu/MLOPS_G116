@@ -7,13 +7,16 @@ import pytest
 
 from mlops_g116.model import DenseNet121, ResNet18, TumorDetectionModelSimple
 
+_BATCH_SIZES = [1, 2, 8]
 
-def test_simple_model_output_shape() -> None:
-    """Ensure the simple model returns logits for 4 classes."""
+
+@pytest.mark.parametrize("batch_size", _BATCH_SIZES)
+def test_simple_model_output_shape(batch_size: int) -> None:
+    """Ensure the simple model returns logits for 4 classes across batch sizes."""
     model = TumorDetectionModelSimple()
-    x = torch.randn(2, 1, 64, 64)
+    x = torch.randn(batch_size, 1, 64, 64)
     y = model(x)
-    assert y.shape == (2, 4), f"Expected output shape (2, 4), got {tuple(y.shape)}"
+    assert y.shape == (batch_size, 4), f"Expected output shape ({batch_size}, 4), got {tuple(y.shape)}"
 
 
 def test_resnet18_output_shape() -> None:
@@ -39,11 +42,3 @@ def test_simple_model_raises_on_wrong_input_shape() -> None:
         model(torch.randn(1, 64, 64))
     with pytest.raises(ValueError, match="Expected input to have 1 channel"):
         model(torch.randn(1, 3, 64, 64))
-
-
-if __name__ == "__main__":
-    test_simple_model_output_shape()
-    test_resnet18_output_shape()
-    test_densenet121_output_shape()
-    test_simple_model_raises_on_wrong_input_shape()
-    print("test_model passed all tests")

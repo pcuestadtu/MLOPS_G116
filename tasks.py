@@ -121,3 +121,7 @@ def train(ctx):
 ## Afegir tasca sweep.yaml per optimitzacio hiperparametres:
 ##      wandb sweep configs/sweep.yaml
 ##      wandb agent <sweep_id>
+## Afegir tasca per pytests
+## Afegir tasca per coverage report:
+##      coverage run --source=src -m pytest tests/
+##      coverage report -m

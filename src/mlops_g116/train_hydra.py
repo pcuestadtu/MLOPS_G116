@@ -211,6 +211,7 @@ def train(config) -> None:
             "optimizer": OmegaConf.to_container(config.optimizer, resolve=True),
         },
         "dir": str(wandb_dir),
+        "settings": wandb.Settings(console="off"),
     }
     if wandb_entity:
         wandb_kwargs["entity"] = wandb_entity
