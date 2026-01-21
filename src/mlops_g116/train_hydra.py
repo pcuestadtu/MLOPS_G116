@@ -152,12 +152,20 @@ def _launch_tensorboard(output_dir: Path, preferred_port: int, open_browser: boo
     logger.warning(f"TensorBoard did not start. Try: tensorboard --logdir {output_dir} --port {port}")
 
 @hydra.main(config_path=str(CONFIG_DIR), config_name="config.yaml", version_base=None)
-def train(config: DictConfig) -> None:
-    """Train a model and save artifacts with Hydra configuration.
+def train(config) -> None:
+    '''
+    Train a neural network on the MNIST dataset and save the trained model
+    together with training statistics.
 
-    Args:
-        config: Hydra configuration with hyperparameters, model, and optimizer settings.
-    """
+            Parameters:
+                    lr (float): Learning rate used by the optimizer.
+                    batch_size (int): Number of samples per training batch.
+                    epochs (int): Number of full passes over the training dataset.
+
+            Returns:
+                    None: The function saves the trained model weights to disk
+                          and stores training loss and accuracy plots.
+    '''
     hparams = config.hyperparameters
     dotenv_available = load_dotenv is not None
     if dotenv_available:
@@ -210,7 +218,6 @@ def train(config: DictConfig) -> None:
     # Initialize model and move it to the selected device (GPU/CPU)
     model = instantiate(config.model).to(DEVICE)
 
-    # Load corrupted MNIST dataset
     # train_set is used for training, test_set is ignored here
     train_set, _ = load_data()
     train_labels = train_set.tensors[1]
