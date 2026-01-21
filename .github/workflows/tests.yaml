@@ -30,6 +30,8 @@ jobs:
           pip install -r requirements_dev.txt
           pip list
 
+      - name: Pull data
+        run: dvc pull
 
       - name: Run tests & coverage
         run: |
