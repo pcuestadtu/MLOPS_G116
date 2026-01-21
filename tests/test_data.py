@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from PIL import Image
 
 _TEST_ROOT = os.path.dirname(__file__)
@@ -7,11 +8,13 @@ _PROJECT_ROOT = os.path.dirname(_TEST_ROOT)
 _PATH_DATA = os.path.join(_PROJECT_ROOT, "data")
 
 RAW_DIR = os.path.join(_PATH_DATA, "raw", "brain_dataset")
+DATA_AVAILABLE = os.path.isdir(RAW_DIR)
 
 EXPECTED_SPLITS = ["Training", "Testing"]
 EXPECTED_CLASSES = ["glioma", "meningioma", "notumor", "pituitary"]
 
 
+@pytest.mark.skipif(not DATA_AVAILABLE, reason="Data files not found")
 def test_splits_exist() -> None:
     """Validate that required train/test splits exist."""
     splits = [f for f in os.listdir(RAW_DIR) if os.path.isdir(os.path.join(RAW_DIR, f))]
@@ -21,6 +24,7 @@ def test_splits_exist() -> None:
     print(f"✅ Training and Testing splits found: {splits}")
 
 
+@pytest.mark.skipif(not DATA_AVAILABLE, reason="Data files not found")
 def test_classes_exist() -> None:
     """Validate that required class folders exist for each split."""
     for split in EXPECTED_SPLITS:
@@ -32,6 +36,7 @@ def test_classes_exist() -> None:
         print(f"✅ All classes exist in {split}: {expected_classes}")
 
 
+@pytest.mark.skipif(not DATA_AVAILABLE, reason="Data files not found")
 def test_images_exist() -> None:
     """Validate that each class folder contains at least one image."""
     for split in EXPECTED_SPLITS:
@@ -42,6 +47,7 @@ def test_images_exist() -> None:
             print(f"✅ {len(files)} images found in {split}/{cls}")
 
 
+@pytest.mark.skipif(not DATA_AVAILABLE, reason="Data files not found")
 def test_images_readable() -> None:
     """Validate that each image can be opened by PIL without errors."""
     files_count = 0
@@ -56,11 +62,3 @@ def test_images_readable() -> None:
                 except Exception:
                     raise AssertionError(f"❌ Corrupted image: {path}")
     print(f"✅ All {files_count} images are readable")
-
-
-if __name__ == "__main__":
-    test_splits_exist()
-    test_classes_exist()
-    test_images_exist()
-    test_images_readable()
-    print("brain_dataset passed all tests")
