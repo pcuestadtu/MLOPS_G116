@@ -1,47 +1,61 @@
 from fastapi import FastAPI
-import json
 from contextlib import asynccontextmanager
 
 import anyio
 import torch
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image
-from torchvision import models, transforms
+from torchvision import transforms
+# Local
+# from src.mlops_g116.model import TumorDetectionModelSimple
+# Docker
+from model import TumorDetectionModelSimple
 
+# Constants
+MODEL_CHECKPOINT = "models/model.pth"
+IMG_SIZE = 224 # Make sure this matches your training size
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Context manager to start and stop the lifespan events of the FastAPI application."""
-    global model, transform, imagenet_classes
-    # Load model
-    model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
+    """Context manager to start and stop the lifespan events."""
+    global model, transform, labels
+
+    # 1. Define Labels
+    labels = ["glioma", "meningioma", "notumor", "pituitary"]
+
+    # 2. Load Model (CPU only, as requested)
+    model = TumorDetectionModelSimple()
+    
+    # Load weights ensuring they map to CPU
+    state_dict = torch.load(MODEL_CHECKPOINT, map_location=torch.device('cpu'))
+    model.load_state_dict(state_dict)
     model.eval()
 
-    transform = transforms.Compose(
-        [
-            transforms.Resize((224, 224)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ],
-    )
+    # 3. Define Transforms
+    # We combine the resizing, tensor conversion, AND normalization here.
+    transform = transforms.Compose([
+        transforms.Resize((IMG_SIZE, IMG_SIZE)),
+        transforms.ToTensor(),
+        
+        # NORMALIZATION STEP:
+        # Since we don't have the exact dataset mean/std from training,
+        # we use 0.5/0.5 to map inputs to the [-1, 1] range.
+        transforms.Normalize(mean=[0.5], std=[0.5]) 
+    ])
 
-    async with await anyio.open_file("imagenet-simple-labels.json") as f:
-        content = await f.read()  # Read the file asynchronously
-        imagenet_classes = json.loads(content) # Parse the JSON content
-
+    print("Model loaded successfully!")
     yield
 
     # Clean up
-    del model
-    del transform
-    del imagenet_classes
+    del model, transform, labels
 
 
 app = FastAPI(lifespan=lifespan)
 
-def predict_image(image_path: str, top_k: int = 5):
-    """Predict and return only the top K results."""
-    img = Image.open(image_path).convert("RGB")
+def predict_image(image_path: str, top_k: int = 4): # Changed default to 4 (max classes)
+    """Predict and return the top results."""
+    # 1. FIX: Convert to Grayscale ("L") to match your model input
+    img = Image.open(image_path).convert("L")
     img = transform(img).unsqueeze(0)
     
     with torch.no_grad():
@@ -49,20 +63,19 @@ def predict_image(image_path: str, top_k: int = 5):
     
     probabilities = output.softmax(dim=-1)
     
-    # Get the top K probabilities and their indices
-    # values: the actual scores (0.95, 0.03...)
-    # indices: the class IDs (234, 5, 89...)
-    values, indices = torch.topk(probabilities, top_k)
+    # 2. FIX: Ensure top_k doesn't exceed actual number of classes (4)
+    # If the user asks for 5, we clamp it to 4 to prevent a crash.
+    k = min(top_k, len(labels))
+    values, indices = torch.topk(probabilities, k)
     
     # Convert tensors to Python lists
     values = values[0].tolist()
     indices = indices[0].tolist()
     
-    # Create a clean list of dictionaries
     results = []
-    for i in range(top_k):
+    for i in range(k):
         results.append({
-            "class": imagenet_classes[indices[i]],
+            "class": labels[indices[i]],
             "score": values[i]
         })
         
@@ -90,7 +103,7 @@ async def classify_image(file: UploadFile = File(...)):
         async with await anyio.open_file(file.filename, "wb") as f:
             await f.write(contents)
             
-        # This now returns a nice list: [{'class': 'cat', 'score': 0.95}, ...]
+        # This now returns your 4 tumor classes
         top_predictions = predict_image(file.filename)
         
         return {

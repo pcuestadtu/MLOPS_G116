@@ -37,8 +37,7 @@ Format:
 ```
 
 ```bash
-docker tag my_fastapi_app \
-europe-west1-docker.pkg.dev/dtumlops-484509/mlops-container-images/my_fastapi_app:latest
+docker tag my_fastapi_app europe-west1-docker.pkg.dev/dtumlops-484509/mlops-container-images/ my_fastapi_app:latest
 ```
 
 ### Step 3: Push to Registry (“The Shipping”)

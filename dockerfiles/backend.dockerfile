@@ -16,9 +16,8 @@ RUN pip install --no-cache-dir torch==2.9.1+cpu torchvision==0.24.1+cpu --index-
 # 4. Copy the Backend Code
 # Assuming your terminal is at project root and backend.py is in src/mlops_g116/
 COPY src/mlops_g116/backend.py /app/backend.py
-
-# 5. FIX: Copy the JSON file from your local 'temporal' folder to /app/
-COPY temporal/imagenet-simple-labels.json /app/imagenet-simple-labels.json
+COPY src/mlops_g116/model.py /app/model.py
+COPY models/model.pth /app/models/model.pth
 
 # 6. Environment & Run
 ENV PORT=8000

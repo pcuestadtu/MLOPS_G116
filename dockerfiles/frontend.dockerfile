@@ -1,26 +1,19 @@
 FROM python:3.11-slim
 
-# 1. Install system tools
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y build-essential gcc && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt update && \
+    apt install --no-install-recommends -y build-essential gcc git && \
+    apt clean && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir /app
 
 WORKDIR /app
 
-# 2. Copy Requirements & Install
-COPY requirements_backend.txt .
-RUN pip install --no-cache-dir -r requirements_backend.txt
+COPY requirements_frontend.txt /app/requirements_frontend.txt
+COPY src/mlops_g116/frontend.py /app/frontend.py
 
-# 3. Install PyTorch CPU-only
-RUN pip install --no-cache-dir torch==2.9.1+cpu torchvision==0.24.1+cpu --index-url https://download.pytorch.org/whl/cpu
-# 4. Copy the Backend Code
-# Assuming your terminal is at project root and backend.py is in src/mlops_g116/
-COPY src/mlops_g116/backend.py /app/backend.py
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements_frontend.txt
 
-# 5. FIX: Copy the JSON file from your local 'temporal' folder to /app/
-COPY temporal/imagenet-simple-labels.json /app/imagenet-simple-labels.json
+ENV PORT=8501
 
-# 6. Environment & Run
-ENV PORT=8000
-CMD uvicorn backend:app --host 0.0.0.0 --port $PORT
-
+# FIX: Use 'sh -c' to allow variable expansion of $PORT
+CMD sh -c "streamlit run frontend.py --server.port $PORT --server.address=0.0.0.0"

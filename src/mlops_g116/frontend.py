@@ -8,16 +8,17 @@ from google.cloud import run_v2
 
 @st.cache_resource  
 def get_backend_url():
-    # """Get the URL of the backend service."""
-    # parent = "projects/dtumlops-484509/locations/europe-west1"
-    # client = run_v2.ServicesClient()
-    # services = client.list_services(parent=parent)
-    # for service in services:
-    #     if service.name.split("/")[-1] == "production-model":
-    #         return service.uri
-    # name = os.environ.get("BACKEND", None)
-    return "https://my-backend-image-277552599633.europe-west1.run.app"
-
+    """Get the URL of the backend service."""
+    parent = "projects/dtumlops-484509/locations/europe-west1"
+    client = run_v2.ServicesClient()
+    services = client.list_services(parent=parent)
+    for service in services:
+        if service.name.split("/")[-1] == "my-backend-image":
+            print(service.uri)
+            return service.uri
+        
+    # Fallback to local environment variable if not found
+    return os.environ.get("BACKEND", "http://127.0.0.1:8000")
 
 def classify_image(image, backend):
     """Send the image to the backend for classification."""
