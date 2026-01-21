@@ -5,6 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+
 jobs:
   test:
     runs-on: ${{ matrix.operating-system }}
@@ -14,15 +15,18 @@ jobs:
         python-version: ["3.12", "3.11"]
 
     steps:
+      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
+      # Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install -U pip setuptools wheel
@@ -30,14 +34,23 @@ jobs:
           pip install -r requirements_dev.txt
           pip list
 
+      # Install DVC
       - uses: iterative/setup-dvc@v1
         with:
           version: '3.65.0'
+
+      # Authenticate to GCP
+      - name: Authenticate GCP
+        run: |
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > gcp-key.json
+          gcloud auth activate-service-account --key-file=gcp-key.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json" >> $GITHUB_ENV
+
+      # Pull data using DVC
       - name: Get data
         run: dvc pull
-        env:
-          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+      # Run tests and coverage
       - name: Run tests & coverage
         run: |
           coverage run -m pytest tests/
