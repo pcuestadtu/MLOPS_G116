@@ -92,7 +92,7 @@ def _launch_tensorboard(output_dir: Path, preferred_port: int, open_browser: boo
 @hydra.main(config_path=str(CONFIG_DIR), config_name="config.yaml", version_base=None)
 def train(config) -> None:
     '''
-    Train a neural network on the MNIST dataset and save the trained model
+    Train a neural network on the brain dataset and save the trained model
     together with training statistics.
 
             Parameters:
@@ -159,7 +159,6 @@ def train(config) -> None:
     # Initialize model and move it to the selected device (GPU/CPU)
     model = TumorDetectionModel().to(DEVICE)
 
-    # Load corrupted MNIST dataset
     # train_set is used for training, test_set is ignored here
     train_set, _ = load_data()
     train_labels = train_set.tensors[1]

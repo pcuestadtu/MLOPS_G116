@@ -18,7 +18,7 @@ DEVICE = torch.device(
 
 def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
     '''
-    Train a neural network on the MNIST dataset and save the trained model
+    Train a neural network on the brain dataset and save the trained model
     together with training statistics.
 
             Parameters:
@@ -36,8 +36,7 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
     # Initialize model and move it to the selected device (GPU/CPU)
     model = TumorDetectionModel().to(DEVICE)
 
-    # Load corrupted MNIST dataset
-    # train_set is used for training, test_set is ignored here
+    # Train_set is used for training, test_set is ignored here
     train_set, _ = load_data()
     # Wrap dataset into a DataLoader to iterate in mini-batches
     train_dataloader = torch.utils.data.DataLoader(
@@ -57,14 +56,13 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 10) -> None:
         model.train()  # Enables training mode (important for layers like dropout)
 
         for i, (img, target) in enumerate(train_dataloader):
-            # img shape: (B, 1, 28, 28)
             # target shape: (B,)
             img, target = img.to(DEVICE), target.to(DEVICE)
 
             optimizer.zero_grad()
 
             # Forward pass
-            # y_pred shape: (B, 10)
+            # y_pred shape: (B, 4)
             y_pred = model(img)
 
             # Compute loss comparing predictions with ground truth labels
