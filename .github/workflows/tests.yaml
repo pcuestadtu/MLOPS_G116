@@ -42,9 +42,10 @@ jobs:
       # Authenticate to GCP
       - name: Authenticate GCP
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > gcp-key.json
+          printf '%s' "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > gcp-key.json
           gcloud auth activate-service-account --key-file=gcp-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=gcp-key.json" >> $GITHUB_ENV
+
 
       # Pull data using DVC
       - name: Get data
