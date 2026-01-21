@@ -36,9 +36,6 @@ jobs:
         env:
           GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
-      - name: Pull data
-        run: dvc pull
-
       - name: Run tests & coverage
         run: |
           coverage run -m pytest tests/
