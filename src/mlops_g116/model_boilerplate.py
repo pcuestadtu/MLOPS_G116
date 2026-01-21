@@ -31,7 +31,7 @@ class ResNet18(nn.Module):
         return self.backbone(x)
 
 
-class TumorDetectionModelSimple(nn.Module):
+class TumorDetectionModelSimple(pl.LightningModule):
     """Basic tumor detection model."""
 
     def __init__(self) -> None:
