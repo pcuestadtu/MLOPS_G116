@@ -7,11 +7,11 @@ steps:
     [
       'build',
       '-f',
-      'dockerfiles/main.dockerfile',
+      '$_MAIN_DOCKERFILE',
       '--build-arg',
-      'GOOGLE_CLOUD_PROJECT=dtumlops',
+      'GOOGLE_CLOUD_PROJECT=$PROJECT_ID',
       '-t',
-      'europe-west1-docker.pkg.dev/dtumlops-484509/mlops-container-images/cloud-container:latest',
+      '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_MAIN_IMAGE:$_TAG',
       '.'
     ]
 
@@ -20,7 +20,7 @@ steps:
   args:
     [
       'push',
-      'europe-west1-docker.pkg.dev/dtumlops-484509/mlops-container-images/cloud-container:latest'
+      '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_MAIN_IMAGE:$_TAG'
     ]
     
 # ==========================================================
@@ -28,23 +28,25 @@ steps:
 # ==========================================================
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build Backend'
+  env:
+    - 'DOCKER_BUILDKIT=1'
   args: [
     'build', '.',
-    '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/mlops-container-images/backend:latest',
-    '-f', 'backend.dockerfile'  # REPLACE with your actual backend Dockerfile name/path
+    '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_BACKEND_IMAGE:$_TAG',
+    '-f', '$_BACKEND_DOCKERFILE'
   ]
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push Backend'
-  args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/mlops-container-images/backend:latest']
+  args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_BACKEND_IMAGE:$_TAG']
   waitFor: ['Build Backend']
 
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'Deploy Backend'
   args: [
     'run', 'deploy', 'backend',  # Service name matches your Python script
-    '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/mlops-container-images/backend:latest',
-    '--region', 'europe-west1',
+    '--image', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_BACKEND_IMAGE:$_TAG',
+    '--region', '$_REGION',
     '--platform', 'managed',
     '--memory', '2Gi',            # CRITICAL: Fixes the OOM crash
     '--allow-unauthenticated'     # Makes the API public so Frontend can reach it
@@ -57,24 +59,26 @@ steps:
 # ==========================================================
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Build Frontend'
+  env:
+    - 'DOCKER_BUILDKIT=1'
   args: [
     'build', '.',
-    '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/mlops-container-images/frontend:latest',
-    '-f', 'frontend.dockerfile' # REPLACE with your actual frontend Dockerfile name/path
+    '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_FRONTEND_IMAGE:$_TAG',
+    '-f', '$_FRONTEND_DOCKERFILE'
   ]
   waitFor: ['-'] # Start immediately (don't wait for backend)
 
 - name: 'gcr.io/cloud-builders/docker'
   id: 'Push Frontend'
-  args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/mlops-container-images/frontend:latest']
+  args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_FRONTEND_IMAGE:$_TAG']
   waitFor: ['Build Frontend']
 
 - name: 'gcr.io/cloud-builders/gcloud'
   id: 'Deploy Frontend'
   args: [
     'run', 'deploy', 'frontend',
-    '--image', 'europe-west1-docker.pkg.dev/$PROJECT_ID/mlops-container-images/frontend:latest',
-    '--region', 'europe-west1',
+    '--image', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/$_FRONTEND_IMAGE:$_TAG',
+    '--region', '$_REGION',
     '--platform', 'managed',
     '--allow-unauthenticated'
   ]
@@ -82,3 +86,14 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _REGION: europe-west1
+  _REPO: mlops-container-images
+  _TAG: latest
+  _MAIN_IMAGE: main
+  _MAIN_DOCKERFILE: dockerfiles/main.dockerfile
+  _BACKEND_IMAGE: backend
+  _BACKEND_DOCKERFILE: dockerfiles/backend.dockerfile
+  _FRONTEND_IMAGE: frontend
+  _FRONTEND_DOCKERFILE: dockerfiles/frontend.dockerfile
