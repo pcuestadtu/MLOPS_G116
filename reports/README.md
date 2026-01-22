@@ -111,10 +111,10 @@ will check the repositories and the code to verify your answers.
 
 * [ ] Write some documentation for your application (M32)
 * [ ] Publish the documentation to GitHub Pages (M32)
-* [ ] Revisit your initial project description. Did the project turn out as you wanted?
-* [ ] Create an architectural diagram over your MLOps pipeline
-* [ ] Make sure all group members have an understanding about all parts of the project
-* [ ] Uploaded all your code to GitHub
+* [X] Revisit your initial project description. Did the project turn out as you wanted?
+* [X] Create an architectural diagram over your MLOps pipeline
+* [X] Make sure all group members have an understanding about all parts of the project
+* [X] Uploaded all your code to GitHub
 
 ## Group information
 
@@ -123,7 +123,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 1 fill here ---
+Group 116
 
 ### Question 2
 > **Enter the study number for each member in the group**
@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+*s254311, s253742, s253749*
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -168,7 +168,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 4 fill here ---
+*We used conda for managing our dependencies. The list of dependencies was auto-generated using pip freeze. To get a*
+> *complete copy of our development environment, one would have to run the following commands: 1) git clone <repository> 2) pip install invoke 3) invoke conda (installs requirements.txt and requirements_dev.txt) 4) invoke gcloud (gcloud auth application-default login). Also grant access to google cloud platform 'dtu_mlops' project*
 
 ### Question 5
 

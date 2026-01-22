@@ -105,6 +105,26 @@ def dvc(ctx, folder="data", message="Add new data"):
 """ No se exactamente que hacen dos de abajo """
 
 @task
+def gcloud(ctx):
+    '''Create and set up a conda environment from environment.yml file.'''
+    ctx.run(f"sudo apt-get update", echo=True)
+    ctx.run(f"sudo apt-get install -y ca-certificates", echo=True)
+    ctx.run(f"sudo update-ca-certificates", echo=True)
+    ctx.run(f"conda install -c conda-forge ca-certificates certifi openssl", echo=True)
+    ctx.run(f"sudo apt-get install apt-transport-https ca-certificates gnupg curl", echo=True)
+    ctx.run(f"curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg", echo=True)
+    ctx.run(f"echo \"deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main\" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list", echo=True)
+    ctx.run(f"sudo apt-get update && sudo apt-get install google-cloud-cli", echo=True)
+    ctx.run(f"gcloud auth login --no-launch-browser", echo=True)
+    ctx.run(f"gcloud auth application-default login --no-launch-browser", echo=True)
+    ctx.run(f"gcloud config set project mlops116", echo=True)
+    ctx.run(f"pip install --upgrade google-api-python-client", echo=True)
+    ctx.run(f"gcloud services enable apigateway.googleapis.com", echo=True)
+    ctx.run(f"gcloud services enable servicemanagement.googleapis.com", echo=True)
+    ctx.run(f"gcloud services enable servicecontrol.googleapis.com", echo=True)
+    ctx.run(f"gcloud auth configure-docker europe-west1-docker.pkg.dev", echo=True) #To be able to pull containers from the cloud [ docker pull europe-west1-docker.pkg.dev/dtumlops-484509/mlops-container-images/cloud-container:latest]
+
+@task
 def pull_data(ctx):
     ctx.run("dvc pull")
 
