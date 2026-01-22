@@ -7,15 +7,15 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image
 from torchvision import transforms
 # Local
-from src.mlops_g116.model import TumorDetectionModelSimple
+#from src.mlops_g116.model import TumorDetectionModelSimple
 # Docker
-#from model import TumorDetectionModelSimple
+from model import TumorDetectionModelSimple
 
 # Constants
 MODEL_CHECKPOINT = "models/model.pth"
 IMG_SIZE = 224 # Make sure this matches your training size
 
-@asynccontextmanager
+@asynccontextmanager    
 async def lifespan(app: FastAPI):
     """Context manager to start and stop the lifespan events."""
     global model, transform, labels
