@@ -13,5 +13,5 @@ workerPoolSpecs:
       value: /gcs/mlops116/data/processed
     args:
     - training=exp1
-    - hyperparameters.epochs=1
-    - hyperparameters.batch_size=64
+    - hyperparameters.epochs=2
+    - hyperparameters.batch_size=128
