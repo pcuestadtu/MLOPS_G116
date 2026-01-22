@@ -52,12 +52,26 @@ class DummyArtifact:
         """No-op add_file."""
 
 
+class DummyProfile:
+    """No-op cProfile.Profile stand-in."""
+
+    def enable(self) -> None:
+        """No-op enable."""
+
+    def disable(self) -> None:
+        """No-op disable."""
+
+    def dump_stats(self, *_args: object, **_kwargs: object) -> None:
+        """No-op dump_stats."""
+
+
 def _patch_evaluate_runtime(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     """Patch evaluate runtime dependencies to use temp outputs."""
     output_dir = tmp_path / "outputs"
     runtime = SimpleNamespace(output_dir=str(output_dir))
     monkeypatch.setattr(evaluate_module.HydraConfig, "get", lambda: SimpleNamespace(runtime=runtime))
     monkeypatch.setattr(evaluate_module, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(evaluate_module.cProfile, "Profile", DummyProfile)
     monkeypatch.setattr(
         evaluate_module.torch.profiler,
         "profile",
@@ -92,10 +106,23 @@ def test_evaluate_raises_when_checkpoint_missing(monkeypatch: pytest.MonkeyPatch
     config = OmegaConf.create(
         {
             "model": {"_target_": "mlops_g116.model.TumorDetectionModelSimple"},
-            "evaluation": {"batch_size": 2, "checkpoint_path": str(tmp_path / "missing.pth")},
+            "batch_size": 2,
+            "checkpoint_path": str(tmp_path / "missing.pth"),
         }
     )
     with pytest.raises(FileNotFoundError, match="Checkpoint not found"):
+        evaluate_module.evaluate.__wrapped__(config)
+
+
+def test_evaluate_raises_on_missing_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Ensure evaluate raises when required config keys are missing."""
+    _patch_evaluate_runtime(monkeypatch, tmp_path)
+    config = OmegaConf.create(
+        {
+            "model": {"_target_": "mlops_g116.model.TumorDetectionModelSimple"},
+        }
+    )
+    with pytest.raises(KeyError, match="Missing evaluation configuration"):
         evaluate_module.evaluate.__wrapped__(config)
 
 
@@ -111,7 +138,8 @@ def test_evaluate_writes_metrics_and_figures(monkeypatch: pytest.MonkeyPatch, tm
     config = OmegaConf.create(
         {
             "model": {"_target_": "mlops_g116.model.TumorDetectionModelSimple"},
-            "evaluation": {"batch_size": 2, "checkpoint_path": str(checkpoint_path)},
+            "batch_size": 2,
+            "checkpoint_path": str(checkpoint_path),
         }
     )
     evaluate_module.evaluate.__wrapped__(config)

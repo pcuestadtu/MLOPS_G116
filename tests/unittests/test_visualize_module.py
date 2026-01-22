@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 import torch
+from omegaconf import OmegaConf
 
 import mlops_g116.visualize as visualize_module
 from mlops_g116.model import TumorDetectionModelSimple
@@ -70,24 +72,26 @@ def _make_dataset(num_samples: int) -> torch.utils.data.TensorDataset:
     return torch.utils.data.TensorDataset(images, labels)
 
 
-def test_build_model_rejects_unknown_name() -> None:
-    """Ensure _build_model rejects unsupported names."""
-    with pytest.raises(ValueError, match="Unsupported model name"):
-        visualize_module._build_model("unknown")
+class DummyProfile:
+    """No-op cProfile.Profile stand-in."""
+
+    def enable(self) -> None:
+        """No-op enable."""
+
+    def disable(self) -> None:
+        """No-op disable."""
+
+    def dump_stats(self, *_args: object, **_kwargs: object) -> None:
+        """No-op dump_stats."""
 
 
-def test_visualize_writes_embedding_figure(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Ensure visualize writes the embedding figure."""
-    monkeypatch.chdir(tmp_path)
-    models_dir = tmp_path / "models"
-    models_dir.mkdir(parents=True, exist_ok=True)
-    model = TumorDetectionModelSimple()
-    checkpoint_path = models_dir / "model.pth"
-    torch.save(model.state_dict(), checkpoint_path)
-    train_set = _make_dataset(4)
-    test_set = _make_dataset(40)
-    monkeypatch.setattr(visualize_module, "load_data", lambda: (train_set, test_set))
-    monkeypatch.setattr(visualize_module, "TSNE", DummyTSNE)
+def _patch_visualize_runtime(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
+    """Patch visualize runtime dependencies to use temp outputs."""
+    output_dir = tmp_path / "outputs"
+    runtime = SimpleNamespace(output_dir=str(output_dir))
+    monkeypatch.setattr(visualize_module.HydraConfig, "get", lambda: SimpleNamespace(runtime=runtime))
+    monkeypatch.setattr(visualize_module, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(visualize_module.cProfile, "Profile", DummyProfile)
     monkeypatch.setattr(
         visualize_module.torch.profiler,
         "profile",
@@ -106,13 +110,67 @@ def test_visualize_writes_embedding_figure(monkeypatch: pytest.MonkeyPatch, tmp_
     monkeypatch.setenv("RUN_SNAKEVIZ", "0")
     monkeypatch.setenv("RUN_TENSORBOARD", "0")
     monkeypatch.setenv("MPLBACKEND", "Agg")
+    return output_dir
 
-    visualize_module.visualize(
-        model_checkpoint=str(checkpoint_path),
-        model_name="simple",
-        figure_name="embeddings.png",
-        batch_size=16,
+
+def test_strip_classifier_replaces_fc1() -> None:
+    """Ensure _strip_classifier replaces simple model classifier."""
+    model = TumorDetectionModelSimple()
+    visualize_module._strip_classifier(model)
+    assert isinstance(model.fc1, torch.nn.Identity), "Expected fc1 to be replaced by Identity"
+
+
+def test_visualize_raises_on_missing_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Ensure visualize raises when required config keys are missing."""
+    _patch_visualize_runtime(monkeypatch, tmp_path)
+    config = OmegaConf.create(
+        {
+            "model": {"_target_": "mlops_g116.model.TumorDetectionModelSimple"},
+        }
     )
+    with pytest.raises(KeyError, match="Missing visualization configuration"):
+        visualize_module.visualize.__wrapped__(config)
 
-    figure_path = tmp_path / "reports" / "figures" / "embeddings.png"
+
+def test_visualize_writes_embedding_figure(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Ensure visualize writes the embedding figure."""
+    _patch_visualize_runtime(monkeypatch, tmp_path)
+    models_dir = tmp_path / "models"
+    models_dir.mkdir(parents=True, exist_ok=True)
+    model = TumorDetectionModelSimple()
+    checkpoint_path = models_dir / "model.pth"
+    torch.save(model.state_dict(), checkpoint_path)
+    train_set = _make_dataset(4)
+    test_set = _make_dataset(40)
+    monkeypatch.setattr(visualize_module, "load_data", lambda: (train_set, test_set))
+    monkeypatch.setattr(visualize_module, "TSNE", DummyTSNE)
+    config = OmegaConf.create(
+        {
+            "model": {"_target_": "mlops_g116.model.TumorDetectionModelSimple"},
+            "batch_size": 16,
+            "checkpoint_path": str(checkpoint_path),
+            "figure_name": "embeddings.png",
+        }
+    )
+    visualize_module.visualize.__wrapped__(config)
+
+    figure_path = tmp_path / "outputs" / "reports" / "figures" / "embeddings.png"
     assert figure_path.exists(), f"Expected visualization at {figure_path}"
+
+    repo_figure_path = tmp_path / "reports" / "figures" / "embeddings.png"
+    assert repo_figure_path.exists(), f"Expected repo visualization at {repo_figure_path}"
+
+
+def test_visualize_raises_on_missing_checkpoint(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Ensure visualize raises when checkpoint is missing."""
+    _patch_visualize_runtime(monkeypatch, tmp_path)
+    config = OmegaConf.create(
+        {
+            "model": {"_target_": "mlops_g116.model.TumorDetectionModelSimple"},
+            "batch_size": 2,
+            "checkpoint_path": str(tmp_path / "missing.pth"),
+            "figure_name": "embeddings.png",
+        }
+    )
+    with pytest.raises(FileNotFoundError, match="Checkpoint not found"):
+        visualize_module.visualize.__wrapped__(config)
