@@ -10,9 +10,10 @@ workerPoolSpecs:
     - name: WANDB_API_KEY
       value: ${WANDB_API_KEY}
     - name: DATA_ROOT
-      value: /gcs/mlops116/data/processed  
+      value: /gcs/mlops116/data/processed 
+    command: ["wandb", "agent"]
     args:
-    - wandb
-    - agent
+    #- wandb
+    #- agent
     - sergi-luponsantacana-danmarks-tekniske-universitet-dtu/mlops_g116/goglpg6f
 
