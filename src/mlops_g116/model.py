@@ -83,7 +83,7 @@ if __name__ == "__main__":
     print(f"Model: ResNet18 | Parameters: {sum(p.numel() for p in model.parameters()):,}")
 
     # Generate dummy input (Batch, Channel, Height, Width)
-    dummy_input = torch.randn(1, 1, 224, 224)
+    dummy_input = torch.randn(1, 1, 512, 512)
     
     output = model(dummy_input)
     print(f"Input shape: {dummy_input.shape}")
