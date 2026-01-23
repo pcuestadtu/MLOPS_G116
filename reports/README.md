@@ -459,7 +459,7 @@ Cloud Build is for building the images (via trigger) and pushing them to the Art
 >
 > Answer:
 
-*We developed an API for our model using FastAPI. The API consists of a root endpoint to test if the service is running and a /classify endpoint that takes in an image and returns the predictions of the best-performing trained model saved in models/model.pth. We implemented an async lifespan for the API (using app = FastAPI(lifespan=lifespan)) to separate initialization from inference. This ensures that the model is loaded only once when the application starts, improving performance for subsequent requests.*
+We developed an API for our model using FastAPI. The API consists of a root endpoint to test if the service is running and a /classify endpoint that takes in an image and returns the predictions of the best-performing trained model saved in models/model.pth. We implemented an asynchronous lifespan context manager (app = FastAPI(lifespan=lifespan)) to optimize the API's efficiency. This architectural pattern decouples the resource-heavy initialization logic (loading the model) from the request processing logic. Without this, the server would potentially reload the model weights from the disk for every incoming request, causing high latency. By using lifespan, we ensure the model is loaded into memory exactly once when the server starts up.
 
 
 ### Question 24
@@ -507,7 +507,8 @@ Cloud Build is for building the images (via trigger) and pushing them to the Art
 >
 > Answer:
 
-*We did not manage to implement monitoring for our deployed model. However, implementing monitoring would be important for ensuring the reliability of our application. Monitoring would allow us to track key performance metrics such as response times, error rates, and system resource usage (CPU, memory). These metrics would help us identify potential bottlenecks or failures in the system. For our project, target drift is a more practical strategy than data drift. While detecting drift in images requires complex, resource-heavy feature extraction, target drift simply analyzes the model's outputs. Any significant shift in the distribution of predicted classes could serve as an indicator of potential model failure.*
+We did not manage to implement monitoring for our deployed model. However, implementing monitoring would be important for ensuring the reliability of our application. Monitoring would allow us to track key performance metrics such as response times, error rates, and system resource usage (CPU, memory). These metrics would help us identify potential bottlenecks or failures in the system.
+Regarding the detection of distribution shifts, target drift is a more practical strategy than data drift for our project. While detecting drift in images requires complex, resource-heavy feature extraction, target drift simply analyzes the model's outputs. Any significant shift in the distribution of predicted classes could serve as an indicator of potential model failure.
 
 ## Overall discussion of project
 
