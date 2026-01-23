@@ -170,6 +170,16 @@ will check the repositories and the code to verify your answers.
 
 >*We used Conda to manage all our project dependencies and ensure that the development environment is consistent across different machines. The list of dependencies was automatically generated using pip freeze and pipreqs to capture the exact versions of all Python packages installed during development. To replicate the development environment exactly, a new team member would need to follow these steps: 1) git clone <repository> to get a local copy of the project, 2) pip install invoke to install the task runner we use for automating setup commands, 3) invoke conda, which creates a Conda environment and installs all packages listed in both requirements.txt and requirements_dev.txt, ensuring that the environment matches exactly what the team uses, and 4) invoke gcloud, which runs gcloud auth application-default login to authenticate with Google Cloud Platform and grant the necessary permissions to access the dtu_mlops project. After completing these steps, the new team member will have a fully functional development environment with all dependencies installed and properly configured, including access to cloud resources needed for the project.*
 
+
+We managed dependencies with pip and pinned requirements files stored in the repo. `requirements.txt` contains runtime
+packages and `requirements_dev.txt` adds test, lint, and docs tools; `pyproject.toml` exposes these as dynamic
+dependencies for editable installs. A new member can reproduce the environment by cloning the repo, creating a Python
+3.12 conda environment, activating it, upgrading pip/setuptools/wheel, then running `pip install -r requirements.txt`
+and `pip install -e .`; for development tooling, add `pip install -e .[dev]`. We also provide Invoke tasks in `tasks.py`
+(`invoke create_environment`, `invoke requirements`, `invoke dev_requirements`) to standardize these steps. For extra
+reproducibility we include a Dev Container (Python 3.12-slim) that installs the same requirements, and Dockerfiles for
+backend/frontend/train images to pin runtime dependencies in deployment environments.
+
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
