@@ -233,14 +233,11 @@ def main(config: DictConfig) -> None:
         wandb_kwargs["entity"] = wandb_entity
     if wandb_mode:
         wandb_kwargs["mode"] = wandb_mode
-    wandb_run = wandb.run
-    if wandb_run is None:
-        try:
-            wandb_run = wandb.init(**wandb_kwargs)
-        except Exception as exc:
-            logger.warning(f"W&B init failed; continuing without logging: {exc}")
-    else:
-        wandb.config.update(wandb_kwargs["config"], allow_val_change=True)
+    wandb_run = None
+    try:
+        wandb_run = wandb.init(**wandb_kwargs)
+    except Exception as exc:
+        logger.warning(f"W&B init failed; continuing without logging: {exc}")
     wandb_enabled = wandb_run is not None
     model_dir = output_dir / "models"
     figure_dir = output_dir / "reports" / "figures"
@@ -366,7 +363,6 @@ def main(config: DictConfig) -> None:
         preds_tensor = torch.cat(preds, 0)
         targets_tensor = torch.cat(targets, 0)
         num_classes = preds_tensor.shape[1]
-        fig, ax = plt.subplots()
         for class_id in range(num_classes):
             if (targets_tensor == class_id).any():
                 one_hot = torch.zeros_like(targets_tensor)
@@ -376,8 +372,9 @@ def main(config: DictConfig) -> None:
                     preds_tensor[:, class_id].numpy(),
                     name=f"ROC curve for {class_id}",
                     plot_chance_level=(class_id == 2),
-                    ax=ax,
                 )
+
+        fig = plt.gcf()
         if wandb_enabled:
             wandb.log({"train/roc": wandb.Image(fig)})
         plt.close(fig)
