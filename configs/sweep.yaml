@@ -7,11 +7,11 @@ metric:
   name: test/accuracy
 
 parameters:
-  hyperparameters.lr:
+  lr:
     values: [0.0001, 0.001, 0.01]
-  hyperparameters.batch_size:
+  batch_size:
     values: [32, 64]
-  hyperparameters.epochs:
+  epochs:
     value: 10
   model:
     values: [simple, resnet18, densenet121]
@@ -23,12 +23,11 @@ parameters:
 
 command:
   - ${env}
-  - ${interpreter}
+  - python3
   - -m
   - mlops_g116.main
-  - hyperparameters.lr=${hyperparameters.lr}
-  - hyperparameters.batch_size=${hyperparameters.batch_size}
-  - hyperparameters.epochs=${hyperparameters.epochs}
+  - hyperparameters.lr=${lr}
+  - hyperparameters.batch_size=${batch_size}
+  - hyperparameters.epochs=${epochs}
   - model=${model}
   - optimizer=${optimizer}
-
