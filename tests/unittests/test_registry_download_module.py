@@ -51,7 +51,6 @@ def test_download_and_load_copies_model(tmp_path: Path, monkeypatch: pytest.Monk
         registry="registry",
         collection="collection",
         alias="latest",
-        artifact_dir=tmp_path / "downloads",
     )
 
     assert output_path == tmp_path / "models" / "model.pth"
@@ -73,7 +72,6 @@ def test_download_and_load_raises_without_model(tmp_path: Path, monkeypatch: pyt
             registry="registry",
             collection="collection",
             alias="latest",
-            artifact_dir=tmp_path / "downloads",
         )
 
 
@@ -86,7 +84,6 @@ def test_main_uses_env_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
         registry: str,
         collection: str,
         alias: str,
-        artifact_dir: Path,
     ) -> Path:
         called.update(
             {
@@ -94,7 +91,6 @@ def test_main_uses_env_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
                 "registry": registry,
                 "collection": collection,
                 "alias": alias,
-                "artifact_dir": artifact_dir,
             }
         )
         return tmp_path / "models" / "model.pth"
@@ -106,7 +102,6 @@ def test_main_uses_env_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
     monkeypatch.setenv("WANDB_REGISTRY", "my-registry")
     monkeypatch.setenv("WANDB_COLLECTION_MAIN", "my-collection")
     monkeypatch.setenv("WANDB_ALIAS", "prod")
-    monkeypatch.setenv("WANDB_ARTIFACT_DIR", str(tmp_path / "artifacts"))
 
     registry_download.main()
 
@@ -114,7 +109,6 @@ def test_main_uses_env_defaults(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
     assert called["registry"] == "my-registry"
     assert called["collection"] == "my-collection"
     assert called["alias"] == "prod"
-    assert called["artifact_dir"] == tmp_path / "artifacts"
 
 
 def test_main_requires_entity(monkeypatch: pytest.MonkeyPatch) -> None:
