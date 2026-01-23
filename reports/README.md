@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
-> *s254311, s253742, s253749*
+> s254311, s253742, s253749
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -168,7 +168,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
->*We used Conda to manage all our project dependencies and ensure that the development environment is consistent across different machines. The list of dependencies was automatically generated using pip freeze and pipreqs to capture the exact versions of all Python packages installed during development. To replicate the development environment exactly, a new team member would need to follow these steps: 1) git clone <repository> to get a local copy of the project, 2) pip install invoke to install the task runner we use for automating setup commands, 3) invoke create_environment to create the Conda env and then run invoke requirements plus invoke dev_requirements to install requirements.txt and the dev tools with pinned versions, and 4) invoke gcloud, which runs gcloud auth application-default login to authenticate with Google Cloud Platform and grant the necessary permissions to access the dtu_mlops project. After completing these steps, the new team member will have a fully functional development environment with all dependencies installed and properly configured, including access to cloud resources needed for the project.For extra reproducibility we include a Dev Container (Python 3.12-slim) that installs the same requirements, and Dockerfiles for backend/frontend/train images to pin runtime dependencies in deployment environments.*
+>We used Conda to manage all our project dependencies and ensure that the development environment is consistent across different machines. The list of dependencies was automatically generated using pip freeze and pipreqs to capture the exact versions of all Python packages installed during development. To replicate the development environment exactly, a new team member would need to follow these steps: 1) git clone <repository> to get a local copy of the project 2) pip install invoke to install the task runner we use for automating setup commands 3) invoke create_environment to create the Conda env and then run invoke requirements plus invoke dev_requirements to install requirements.txt and the dev tools with pinned versions 4) invoke gcloud, which runs gcloud auth application-default login to authenticate with Google Cloud Platform and grant the necessary permissions to access the dtu_mlops project. After completing these steps, the new team member will have a fully functional development environment with all dependencies installed and properly configured, including access to cloud resources needed for the project. For extra reproducibility we include a Dev Container (Python 3.12-slim) that installs the same requirements, and Dockerfiles for backend/frontend/train images to pin runtime dependencies in deployment environments.
 
 ### Question 5
 
@@ -184,7 +184,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
->*Compared to the cookiecutter template, we kept the same high-level folders (src, tests, configs, dockerfiles, reports, docs) but extended them for our workflow. In src/mlops_g116 we added a unified main.py that runs training, evaluation, and visualization in one Hydra-driven run, plus parallel boilerplate variants (train_boilerplate.py, model_boilerplate.py) for experiments. We introduced data_importfromcloud.py to preprocess directly from GCS when a DVC pull is not desired, while still keeping the local data pipeline. We expanded configs with dataset/model/optimizer/training subfolders plus evaluation/visualization, a vertex/ section for cloud training, and cloudbuild.yaml for Docker image builds. For deployment and reproducibility we added several Dockerfiles: main.dockerfile, main.CPU.dockerfile, and main.local.dockerfile for the core pipeline; train.local.dockerfile for local training; plus backend/frontend/evaluate/visualize images, each paired with *_entrypoint.sh scripts. We also added a Dev Container and separate requirements files (runtime, dev, backend, frontend, GPU).*
+>Compared to the cookiecutter template, we kept the same high-level folders (src, tests, configs, dockerfiles, reports, docs) but extended them for our workflow. In src/mlops_g116 we added a unified main.py that runs training, evaluation, and visualization in one Hydra-driven run, plus parallel boilerplate variants (train_boilerplate.py, model_boilerplate.py) for experiments. We introduced data_importfromcloud.py to preprocess directly from GCS when a DVC pull is not desired, while still keeping the local data pipeline. We expanded configs with dataset/model/optimizer/training subfolders plus evaluation/visualization, a vertex/ section for cloud training, and cloudbuild.yaml for Docker image builds. For deployment and reproducibility we added several Dockerfiles: main.dockerfile, main.CPU.dockerfile, and main.local.dockerfile for the core pipeline; train.local.dockerfile for local training; plus backend/frontend/evaluate/visualize images, each paired with *_entrypoint.sh scripts. We also added a Dev Container and separate requirements files (runtime, dev, backend, frontend, GPU).
 
 ### Question 6
 
@@ -199,7 +199,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
->*We enforced code quality with Ruff (ruff check) and formatting with ruff format, aligned with PEP8 and run in CI/pre-commit. We also used type hints throughout the Python modules and docstrings  on functions/classes so behavior and inputs are explicit. These practices matter in larger projects because many contributors touch the same code: consistent formatting reduces review noise, linting catches errors and unused code early, and typing makes interfaces clear, enabling tooling and safer refactors. Documentation and docstrings are essential for onboarding and long-term maintenance; they preserve context, make experiments reproducible, and reduce the bus-factor when team members change or revisit the code later.*
+>We enforced code quality with Ruff (ruff check) and formatting with ruff format, aligned with PEP8 and run in CI/pre-commit. We also used type hints throughout the Python modules and docstrings  on functions/classes so behavior and inputs are explicit. These practices matter in larger projects because many contributors touch the same code: consistent formatting reduces review noise, linting catches errors and unused code early, and typing makes interfaces clear, enabling tooling and safer refactors. Documentation and docstrings are essential for onboarding and long-term maintenance; they preserve context, make experiments reproducible, and reduce the bus-factor when team members change or revisit the code later.
 
 ## Version control
 
@@ -218,8 +218,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
->*We organized our pytest into subfolders for unit, integration, and performance tests. Unit tests validate the core modules (data loading/preprocessing, model shapes, training/evaluation utilities, registry download, and
-frontend logic) to catch regressions early. Integration tests exercise the FastAPI `/classify` endpoint end-to-end with an in-memory image to confirm the full inference pipeline works. Performance tests (Locust) simulate concurrent users to measure latency and throughput. We also run pytest in GitHub Actions (CI) to ensure tests execute on every push/PR. This setup ensures correctness across components and realistic usage scenarios.*
+>We organized our pytest into subfolders for unit, integration and performance tests. Unit tests validate the core modules (data loading/preprocessing, model shapes, training/evaluation utilities, registry download, and frontend logic) to catch regressions early. Integration tests exercise the FastAPI `/classify` endpoint end-to-end with an in-memory image to confirm the full inference pipeline works. Performance tests (Locust) simulate concurrent users to measure latency and throughput. We also run pytest in GitHub Actions (CI) to ensure tests execute on every push/PR. This setup ensures correctness across components and realistic usage scenarios.
 
 ### Question 8
 
@@ -234,7 +233,7 @@ frontend logic) to catch regressions early. Integration tests exercise the FastA
 >
 > Answer:
 
-*Our total coverage is 58% (619 misses out of 1479 statements). The low overall number is mainly driven by the large `main.py` (25%) and `train.py` (21%), which include many branches for profiling, logging, cloud uploads, and W&B setup that are hard to exercise in unit tests. Most other modules are above ~75%, with several in the 90% range (backend,frontend, data_importfromcloud, model, registry_download). We cover all key files, which is valuable even if the aggregate is lower. We generate this with the Invoke task `invoke coverage`. We attempted to upload coverage reports to Codecov, but it was costly/complicated for our setup, so we kept local reports. Even with higher coverage we would not trust the system to be error‑free, since tests reduce risk but cannot cover every runtime or data edge case.*
+Our total coverage is 58% (619 misses out of 1479 statements). The low overall number is mainly driven by the large `main.py` (25%) and `train.py` (21%), which include many branches for profiling, logging, cloud uploads, and W&B setup that are hard to exercise in unit tests. Most other modules are above ~75%, with several in the 90% range (backend, frontend, data_importfromcloud, model, registry_download). We cover all key files, which is valuable even if the aggregate is lower. We generate this with the Invoke task `invoke coverage`. We attempted to upload coverage reports to Codecov, but it was costly/complicated for our setup, so we kept local reports. Even with higher coverage we would not trust the system to be error‑free, since tests reduce risk but cannot cover every runtime or data edge case.
 
 ### Question 9
 
@@ -249,7 +248,7 @@ frontend logic) to catch regressions early. Integration tests exercise the FastA
 >
 > Answer:
 
->*We made use of both branches and pull requests (PRs) in our project. Each group member worked on their own branch. On the remote repository, we had four branches (main and three personal branches), while locally each member had two branches (main and their personal branch). When it was time to upload changes, we added, committed, and pushed the personal branch. After GitHub Actions passed all tests, we opened a pull request to merge the personal branch into main. Once the tests passed again, we authorized the merge and pulled main locally. Pull requests helped improve version control by enforcing code reviews and automated testing before any changes were merged into the main branch. This ensured that new features or fixes were validated, reduced the risk of introducing errors, and maintained a clear and traceable history of changes. This workflow allowed us to resolve issues without affecting the protected main branch.*
+>We made use of both branches and pull requests (PRs) in our project. Each group member worked on their own branch. On the remote repository, we had four branches (main and three personal branches), while locally each member had two branches (main and their personal branch). When it was time to upload changes, we added, committed, and pushed the personal branch. After GitHub Actions passed all tests, we opened a pull request to merge the personal branch into main. Once the tests passed again, we authorized the merge and pulled main locally. Pull requests helped improve version control by enforcing code reviews and automated testing before any changes were merged into the main branch. This ensured that new features or fixes were validated, reduced the risk of introducing errors, and maintained a clear and traceable history of changes. This workflow allowed us to resolve issues without affecting the protected main branch.
 
 
 ### Question 10
