@@ -16,6 +16,8 @@ RUN apt update && \
     apt install --no-install-recommends -y build-essential gcc python3 python3-pip && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
 WORKDIR /app
 
 COPY src src/
