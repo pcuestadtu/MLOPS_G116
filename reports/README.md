@@ -168,7 +168,7 @@ Group 116
 >
 > Answer:
 
-*We used conda for managing our dependencies. The list of dependencies was auto-generated using pip freeze. To get a complete copy of our development environment, one would have to run the following commands: 1) git clone <repository> 2) pip install invoke 3) invoke conda (installs requirements.txt and requirements_dev.txt) 4) invoke gcloud (gcloud auth application-default login). Also grant access to google cloud platform 'dtu_mlops' project*
+*We used Conda to manage all our project dependencies and ensure that the development environment is consistent across different machines. The list of dependencies was automatically generated using pip freeze to capture the exact versions of all Python packages installed during development. To replicate the development environment exactly, a new team member would need to follow these steps: 1) git clone <repository> to get a local copy of the project, 2) pip install invoke to install the task runner we use for automating setup commands, 3) invoke conda, which creates a Conda environment and installs all packages listed in both requirements.txt and requirements_dev.txt, ensuring that the environment matches exactly what the team uses, and 4) invoke gcloud, which runs gcloud auth application-default login to authenticate with Google Cloud Platform and grant the necessary permissions to access the dtu_mlops project. After completing these steps, the new team member will have a fully functional development environment with all dependencies installed and properly configured, including access to cloud resources needed for the project.*
 
 ### Question 5
 
@@ -184,7 +184,7 @@ Group 116
 >
 > Answer:
 
---- question 5 fill here ---
+*From the cookiecutter template, we have filled out the src, tests and docs folders. In the src folder, we implemented the main modules of our project, including data processing, model training and evaluation. The tests folder contains unit tests for each module to ensure correctness and reliability. We have removed the notebooks folder because we did not use Jupyter notebooks in this project, as all our experiments are run through scripts. Additionally, we added an experiments folder that contains configuration files and scripts for executing and tracking different experiment runs. This helps maintain reproducibility and allows easy modification of parameters. We also customized the README.md to include project motivation, a summary of the results, and instructions on how to run the code. Overall, the project adheres to the cookiecutter structure while incorporating specific folders and files that support our workflow efficiently.*
 
 ### Question 6
 
