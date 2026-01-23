@@ -218,8 +218,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
->*In total we have implemented 3 tests. Primarily we are testing the data/raw folder structrue and images, the... and ... as these the most critical parts of our*
-> *application but also ... .*
+>*We organized our pytest into subfolders for unit, integration, and performance tests. Unit tests validate the core modules (data loading/preprocessing, model shapes, training/evaluation utilities, registry download, and
+frontend logic) to catch regressions early. Integration tests exercise the FastAPI `/classify` endpoint end-to-end with an in-memory image to confirm the full inference pipeline works. Performance tests (Locust) simulate concurrent users to measure latency and throughput. We also run pytest in GitHub Actions (CI) to ensure tests execute on every push/PR. This setup ensures correctness across components and realistic usage scenarios.*
 
 ### Question 8
 
@@ -234,7 +234,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 8 fill here ---
+*Our total coverage is 58% (619 misses out of 1479 statements). The low overall number is mainly driven by the large `main.py` (25%) and `train.py` (21%), which include many branches for profiling, logging, cloud uploads, and W&B setup that are hard to exercise in unit tests. Most other modules are above ~75%, with several in the 90% range (backend,frontend, data_importfromcloud, model, registry_download). We cover all key files, which is valuable even if the aggregate is lower. We generate this with the Invoke task `invoke coverage`. We attempted to upload coverage reports to Codecov, but it was costly/complicated for our setup, so we kept local reports. Even with higher coverage we would not trust the system to be error‑free, since tests reduce risk but cannot cover every runtime or data edge case.*
 
 ### Question 9
 
