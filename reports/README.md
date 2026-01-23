@@ -284,13 +284,13 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 >
 > Answer:
 
-> *Our CI lives in `.github/workflows/` with two pipelines. `tests.yaml` runs on every push/PR and uses a matrix over Ubuntu, Windows, and macOS to catch OS-specific issues. It sets up Python 3.12 (matching our project requirement) and enables pip caching via `actions/setup-python` (keyed on `requirements.txt`, `requirements_dev.txt`, and `pyproject.toml`) to speed up repeat runs. The job installs dependencies, performs an editable install of the package, and runs `pytest tests/`. It also authenticates to GCP when the service‑account secret is present and conditionally performs a `dvc pull`, so integration tests can run with real data while still succeeding on forks where secrets are missing. We set `fail-fast: false` to surface all OS failures in one run. `linting.yaml` is a separate job that installs dependencies and runs `ruff check` plus `ruff format --check` to enforce linting and formatting. We keep a Dependabot config for automated dependency update PRs and a pre-commit config for local checks before pushing. We considered a Python-version matrix, but several dependencies are pinned for 3.12, so we aligned CI with our runtime to avoid incompatibilities. We also tie CI to our branching policy: feature branches must pass these checks before opening a PR to main, keeping the protected default branch stable. Overall, the CI focuses on fast feedback, reproducible installs, and cross‑platform robustness.
+> Our CI lives in `.github/workflows/` with two pipelines. `tests.yaml` runs on every push/PR and uses a matrix over Ubuntu, Windows, and macOS to catch OS-specific issues. It sets up Python 3.12 (matching our project requirement) and enables pip caching via `actions/setup-python` (keyed on `requirements.txt`, `requirements_dev.txt`, and `pyproject.toml`) to speed up repeat runs. The job installs dependencies, performs an editable install of the package, and runs `pytest tests/`. It also authenticates to GCP when the service‑account secret is present and conditionally performs a `dvc pull`, so integration tests can run with real data while still succeeding on forks where secrets are missing. We set `fail-fast: false` to surface all OS failures in one run. `linting.yaml` is a separate job that installs dependencies and runs `ruff check` plus `ruff format --check` to enforce linting and formatting. We keep a Dependabot config for automated dependency update PRs and a pre-commit config for local checks before pushing. We considered a Python-version matrix, but several dependencies are pinned for 3.12, so we aligned CI with our runtime to avoid incompatibilities. We also tie CI to our branching policy: feature branches must pass these checks before opening a PR to main, keeping the protected default branch stable. Overall, the CI focuses on fast feedback, reproducible installs, and cross‑platform robustness.
 
 >Link to GitHub actions workflows (run IDs):
 >```
 >https://github.com/CatalansMlops/MLOPS_G116/actions/runs/21299897999
 >https://github.com/CatalansMlops/MLOPS_G116/actions/runs/21299897996
->```*
+>```
 
 ## Running code and tracking experiments
 
@@ -388,7 +388,7 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 >
 > Answer:
 
-> *We used the following Google Cloud services: Cloud Build, Artifact Registry, Cloud Run, Compute Engine, Vertex AI and Cloud Storage (Bucket). Cloud Build handles building Docker images whenever a trigger occurs and pushes them to Artifact Registry, where the containers are securely stored. Cloud Run then deploys and runs these containers, making the application publicly accessible. Compute Engine and Vertex AI are used to train our machine learning models, leveraging CPU resources to increase training speed. Finally, Cloud Storage (Bucket) is used to store the dataset in the cloud, ensuring easy access, version control and scalability. Together, these services provide a fully automated, efficient, and reliable pipeline for building, deploying and training our application in the cloud.*
+> We used the following Google Cloud services: Cloud Build, Artifact Registry, Cloud Run, Compute Engine, Vertex AI and Cloud Storage (Bucket). Cloud Build handles building Docker images whenever a trigger occurs and pushes them to Artifact Registry, where the containers are securely stored. Cloud Run then deploys and runs these containers, making the application publicly accessible. Compute Engine and Vertex AI are used to train our machine learning models, leveraging CPU resources to increase training speed. Finally, Cloud Storage (Bucket) is used to store the dataset in the cloud, ensuring easy access, version control and scalability. Together, these services provide a fully automated, efficient, and reliable pipeline for building, deploying and training our application in the cloud.
 
 ### Question 18
 
@@ -403,7 +403,7 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 >
 > Answer:
 
-> *We used Compute Engine, which is the backbone of Google Cloud Platform, to run virtual machines for training our models. Specifically, we used e2-medium instances with 2 virtual CPUs and 4 GB of memory, running on x86‑64 architecture.We started these virtual machines using a custom container that included all the dependencies and code necessary for our project. This setup allowed us to have a reproducible environment for training, ensuring that all team members could run the same workloads consistently. Compute Engine gave us the flexibility to choose the VM type and resources based on our project requirements and to scale the environment as needed.*
+> We used Compute Engine, which is the backbone of Google Cloud Platform, to run virtual machines for training our models. Specifically, we used e2-medium instances with 2 virtual CPUs and 4 GB of memory, running on x86‑64 architecture.We started these virtual machines using a custom container that included all the dependencies and code necessary for our project. This setup allowed us to have a reproducible environment for training, ensuring that all team members could run the same workloads consistently. Compute Engine gave us the flexibility to choose the VM type and resources based on our project requirements and to scale the environment as needed.
 
 ### Question 19
 
@@ -412,7 +412,8 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 >
 > Answer:
 
-![Bucket](figures/bucket_screenshot.png)
+![Bucket Folder](figures/bucket_screenshot.png)
+![Bucket Images](figures/build_screenshot_2.png)
 
 ### Question 20
 
@@ -422,6 +423,7 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 > Answer:
 
 ![Artifact](figures/artifact_screenshot.png)
+![Container Example](figures/artifact_screenshot_2.png)
 
 ### Question 21
 
@@ -431,6 +433,7 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 > Answer:
 
 ![Cloud Build](figures/build_screenshot.png)
+
 
 ### Question 22
 
@@ -445,7 +448,7 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 >
 > Answer:
 
-> *We managed to train our model in the cloud using Vertex AI. To do this, we created an actionable trigger (vertex_ai_train.yaml) that could be executed manually from Google Cloud Build. Once the container was pushed to the Artifact Registry, we started training our model. We chose Vertex AI over using a Compute Engine because Vertex AI provides a higher-level, managed environment specifically designed for machine learning workflows. It simplifies tasks such as resource provisioning, scaling, experiment tracking and monitoring. Unlike Compute Engine, where we would have had to manually configure virtual machines, install dependencies, and manage GPU resources, Vertex AI allowed us to train models quickly and reliably with minimal setup. This made the training process faster, less error-prone, and easier to reproduce, which was particularly beneficial for our team workflow.*
+>We managed to train our model in the cloud using Vertex AI. To do this, we created an actionable trigger (vertex_ai_train.yaml) that could be executed manually from Google Cloud Build. Once the container was pushed to the Artifact Registry, we started training our model. We chose Vertex AI over using a Compute Engine because Vertex AI provides a higher-level, managed environment specifically designed for machine learning workflows. It simplifies tasks such as resource provisioning, scaling, experiment tracking and monitoring. Unlike Compute Engine, where we would have had to manually configure virtual machines, install dependencies, and manage GPU resources, Vertex AI allowed us to train models quickly and reliably with minimal setup. This made the training process faster, less error-prone, and easier to reproduce, which was particularly beneficial for our team workflow.
 
 ## Deployment
 
@@ -479,7 +482,7 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 >
 > Answer:
 
-> *We successfully deployed our API both locally (running it via the command line and containerized with docker run) and in the cloud using Google Cloud Run. To deploy to the cloud, we created a Dockerfile (backend.dockerfile) that sets up the necessary environment and dependencies. After building the Docker image, we tagged and pushed it to Google Cloud Artifact Registry. Then, we deployed the image to Cloud Run, configuring the service with unauthenticated access and assigning it sufficient memory resources (2GB). Cloud Run automatically provided a public URL for our API. To invoke the deployed API, you can run the following command: `curl -X POST "https://backend-277552599633.europe-west1.run.app/classify/"   -H "accept: application/json"   -F "file=@path_to_image.jpg;type=image/jpeg"`. Additonally, we set up continuous deployment using Google Cloud Build with the `cloudbuild.yaml`, which automatically builds and deploys the Docker image whenever changes are pushed to the main branch of our GitHub repository.*
+> We successfully deployed our API both locally (running it via the command line and containerized with docker run) and in the cloud using Google Cloud Run. To deploy to the cloud, we created a Dockerfile (backend.dockerfile) that sets up the necessary environment and dependencies. After building the Docker image, we tagged and pushed it to Google Cloud Artifact Registry. Then, we deployed the image to Cloud Run, configuring the service with unauthenticated access and assigning it sufficient memory resources (2GB). Cloud Run automatically provided a public URL for our API. To invoke the deployed API, you can run the following command: `curl -X POST "https://backend-277552599633.europe-west1.run.app/classify/"   -H "accept: application/json"   -F "file=@path_to_image.jpg;type=image/jpeg"`. Additonally, we set up continuous deployment using Google Cloud Build with the `cloudbuild.yaml`, which automatically builds and deploys the Docker image whenever changes are pushed to the main branch of our GitHub repository.
 
 ### Question 25
 
@@ -494,8 +497,7 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 >
 > Answer:
 
-*We implemented integration tests with Pytest that test how different components (FastAPI, PyTorch model, file handling) work together in the API. The tests verify the API is alive and reachable and validate the full machine learning inference pipeline: they confirm the loading of the PyTorch model, weights, and transforms into memory without crashing, test if the API accepts standard file uploads, verify that the model actually runs on the input and produces an output, and check that the output JSON contains the correct keys and returns exactly 4 classes. For load testing, we created a locustfile that simulates sending POST requests with image files to the /classify endpoint. We tested three scenarios: 1, 5, and 20 concurrent users. While performance remained stable at 1 and 5 users with no latency degradation, at 20 users, the system reached 7.0 RPS and began failing (significantly increased latency). In conclusion, our current Cloud Run deployment (1 CPU, 2GB RAM) supports relatively low traffic volumes. To increase capacity, we could increase the number of CPUs assigned to the service and, consequently, the number of workers running the API to utilize those CPUs.*
-> *We implemented integration tests with Pytest that test how different components (FastAPI, PyTorch model, file handling) work together in the API. The tests verify the API is alive and reachable and validate the full machine learning inference pipeline: they confirm the loading of the PyTorch model, weights, and transforms into memory without crashing, test if the API accepts standard file uploads, verify that the model actually runs on the input and produces an output, and check that the output JSON contains the correct keys and returns exactly 4 classes. For load testing, we created a locustfile that simulates sending POST requests with image files to the /classify endpoint. We tested three scenarios: 1, 5, and 20 concurrent users. While performance remained stable at 1 and 5 users with no latency degradation, at 20 users, the system reached 7.0 RPS and began failing (resulting in 3 dropped requests and significantly increased latency). In conclusion, our current Cloud Run deployment (1 CPU, 2GB RAM) supports relatively low traffic volumes. To increase capacity, we could increase the number of CPUs assigned to the service and, consequently, the number of workers running the API to utilize those CPUs.*
+>We implemented integration tests with Pytest that test how different components (FastAPI, PyTorch model, file handling) work together in the API. The tests verify the API is alive and reachable and validate the full machine learning inference pipeline: they confirm the loading of the PyTorch model, weights, and transforms into memory without crashing, test if the API accepts standard file uploads, verify that the model actually runs on the input and produces an output, and check that the output JSON contains the correct keys and returns exactly 4 classes. For load testing, we created a locustfile that simulates sending POST requests with image files to the /classify endpoint. We tested three scenarios: 1, 5, and 20 concurrent users. While performance remained stable at 1 and 5 users with no latency degradation, at 20 users, the system reached 7.0 RPS and began failing (significantly increased latency). In conclusion, our current Cloud Run deployment (1 CPU, 2GB RAM) supports relatively low traffic volumes. To increase capacity, we could increase the number of CPUs assigned to the service and, consequently, the number of workers running the API to utilize those CPUs.
 
 
 ### Question 26
@@ -511,7 +513,7 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 >
 > Answer:
 
-> *We did not manage to implement monitoring for our deployed model. However, implementing monitoring would be important for ensuring the reliability of our application. Monitoring would allow us to track key performance metrics such as response times, error rates, and system resource usage (CPU, memory). These metrics would help us identify potential bottlenecks or failures in the system. For our project, target drift is a more practical strategy than data drift. While detecting drift in images requires complex, resource-heavy feature extraction, target drift simply analyzes the model's outputs. Any significant shift in the distribution of predicted classes could serve as an indicator of potential model failure.*
+> We did not manage to implement monitoring for our deployed model. However, implementing monitoring would be important for ensuring the reliability of our application. Monitoring would allow us to track key performance metrics such as response times, error rates, and system resource usage (CPU, memory). These metrics would help us identify potential bottlenecks or failures in the system. For our project, target drift is a more practical strategy than data drift. While detecting drift in images requires complex, resource-heavy feature extraction, target drift simply analyzes the model's outputs. Any significant shift in the distribution of predicted classes could serve as an indicator of potential model failure.
 
 ## Overall discussion of project
 
@@ -530,7 +532,7 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 >
 > Answer:
 
-> *In total, we used kr130 out of kr8,237 available for our project. The most expensive service was Container Registry Vulnerability Scanning, which cost kr104, followed by Vertex AI and Cloud Run, each costing kr6, and Compute Engine and Artifact Registry, each costing kr4. Overall, working in the cloud was a very positive experience. It provided scalability, flexibility, and easy access to powerful computing resources without the need to maintain physical hardware. Services like Vertex AI and Cloud Run simplified deployment, automated resource management and allowed us to focus on developing and testing our model rather than managing infrastructure. However, there are some drawbacks. Cloud costs can increase quickly if resources are not managed carefully and understanding all the services and their configurations can be overwhelming at first. Despite these challenges, the advantages of speed, reproducibility, collaboration and low maintenance made cloud computing an excellent choice for our project.*
+> In total, we used kr130 out of kr8,237 available for our project. The most expensive service was Container Registry Vulnerability Scanning, which cost kr104, followed by Vertex AI and Cloud Run, each costing kr6, and Compute Engine and Artifact Registry, each costing kr4. Overall, working in the cloud was a very positive experience. It provided scalability, flexibility, and easy access to powerful computing resources without the need to maintain physical hardware. Services like Vertex AI and Cloud Run simplified deployment, automated resource management and allowed us to focus on developing and testing our model rather than managing infrastructure. However, there are some drawbacks. Cloud costs can increase quickly if resources are not managed carefully and understanding all the services and their configurations can be overwhelming at first. Despite these challenges, the advantages of speed, reproducibility, collaboration and low maintenance made cloud computing an excellent choice for our project.
 
 ### Question 28
 
@@ -546,7 +548,7 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 >
 > Answer:
 
-> *We implemented a frontend for our API using Streamlit. The frontend allows users to easily upload images and view the model's predictions in a user-friendly interface.  Users can upload an image, and upon submission, the frontend sends the image to the backend API (classify endpoint) for classification. The predictions are then displayed on the same page, providing immediate feedback to the user. The frontend is also containerized and deployed in Google Cloud Run and is publicly accessible in https://frontend-277552599633.europe-west1.run.app.*
+> We implemented a frontend for our API using Streamlit. The frontend allows users to easily upload images and view the model's predictions in a user-friendly interface.  Users can upload an image, and upon submission, the frontend sends the image to the backend API (classify endpoint) for classification. The predictions are then displayed on the same page, providing immediate feedback to the user. The frontend is also containerized and deployed in Google Cloud Run and is publicly accessible in https://frontend-277552599633.europe-west1.run.app.
 
 ### Question 29
 
@@ -565,15 +567,15 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 
 ![Pipeline](figures/pipeline.png)
 
-> *We have implemented a fully automated CI/CD pipeline using a cloudbuild.yaml configuration file, designed to streamline the process of building, testing and deploying our application. Whenever changes are pushed to the main branch of our GitHub repository, the pipeline is automatically triggered. The Cloud Build service then takes over, building the Docker images for both the backend and frontend, and pushing them to Google Cloud Artifact Registry. Once the images are available, they are deployed to Google Cloud Run, making the application publicly accessible to users via a simple web interface.*
+> We have implemented a fully automated CI/CD pipeline using a cloudbuild.yaml configuration file, designed to streamline the process of building, testing and deploying our application. Whenever changes are pushed to the main branch of our GitHub repository, the pipeline is automatically triggered. The Cloud Build service then takes over, building the Docker images for both the backend and frontend, and pushing them to Google Cloud Artifact Registry. Once the images are available, they are deployed to Google Cloud Run, making the application publicly accessible to users via a simple web interface.
 
->*The web application allows users to upload MRI brain images and receive real-time feedback regarding their classification. To ensure data integrity and reproducibility, all uploaded files are stored in a Google Cloud Bucket and can also be downloaded locally using DVC, enabling robust version control over the dataset. The data.py script is responsible for processing these images, transforming .jpg files into tensors suitable for model inference and further analysis.*
+>The web application allows users to upload MRI brain images and receive real-time feedback regarding their classification. To ensure data integrity and reproducibility, all uploaded files are stored in a Google Cloud Bucket and can also be downloaded locally using DVC, enabling robust version control over the dataset. The data.py script is responsible for processing these images, transforming .jpg files into tensors suitable for model inference and further analysis.
 
->*To simplify the setup of development environments and the management of permissions, we created several helper functions in tasks.py. These functions automate repetitive tasks and reduce the time required for initial configuration, making it easier for team members to get started or maintain the system*
+>To simplify the setup of development environments and the management of permissions, we created several helper functions in tasks.py. These functions automate repetitive tasks and reduce the time required for initial configuration, making it easier for team members to get started or maintain the system
 
->*In addition to the Cloud Build pipeline, we have integrated GitHub Actions workflows that run automatically for every push. These workflows execute unit tests, verifying that all components of the application function correctly and ensuring that any new changes do not introduce errors.*
+>In addition to the Cloud Build pipeline, we have integrated GitHub Actions workflows that run automatically for every push. These workflows execute unit tests, verifying that all components of the application function correctly and ensuring that any new changes do not introduce errors.
 
->*Overall, this CI/CD setup provides a fully automated, end-to-end workflow for deploying a machine learning application. It covers everything from code integration and containerization to deployment and testing, all while ensuring data versioning, reproducibility, and ease of use. This infrastructure allows users to seamlessly interact with the application, upload MRI images and receive immediate, reliable feedback on their classification results.*
+>Overall, this CI/CD setup provides a fully automated, end-to-end workflow for deploying a machine learning application. It covers everything from code integration and containerization to deployment and testing, all while ensuring data versioning, reproducibility, and ease of use. This infrastructure allows users to seamlessly interact with the application, upload MRI images and receive immediate, reliable feedback on their classification results.
 
 ### Question 30
 
@@ -587,9 +589,9 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 >
 > Answer:
 
-TO DO: completaaar(feel free de borrar el que vulgueu)
->*One of the main problems was setting up the CI/CD pipeline. We encountered several issues with permissions, authentication and configurations in Google Cloud Build and Cloud Run.
-During deployment of frontend and backend services to Cloud Run, we faced challenges related to memory allocation and service accessibility. Initially, the backend service was allocated only 512MB of memory, which proved insufficient for loading the machine learning model, leading to crashes. We resolved this by increasing the memory allocation to 2GB, ensuring stable operation.*
+
+>One of the main problems was setting up the CI/CD pipeline. We encountered several issues with permissions, authentication and configurations in Google Cloud Build and Cloud Run.
+During deployment of frontend and backend services to Cloud Run, we faced challenges related to memory allocation and service accessibility. Initially, the backend service was allocated only 512MB of memory, which proved insufficient for loading the machine learning model, leading to crashes. We resolved this by increasing the memory allocation to 2GB, ensuring stable operation.
 
 ### Question 31
 
@@ -607,6 +609,6 @@ During deployment of frontend and backend services to Cloud Run, we faced challe
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
->*Student s253742 focused on the deployment aspect of the project. This included writing the FastAPI backend application and the Streamlit frontend, containerizing them with Docker, and deploying them to Google Cloud Run. He also set up the CI/CD pipeline using Google Cloud Build to automate the build and deployment processes of them. Additionally, he contributed to writing integration and load tests for the API.*
->*Student s253749 focused on GCP. This included creating a Google Cloud Storage bucket, implementing the DVC connection, managing IAM and the service account, and triggering workflows in Google Cloud Build. Also adapted the data.py file so that the .jpg images could be converted to tensors*
->*We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot and Codex to help write some of our code.*
+>Student s253742 focused on the deployment aspect of the project. This included writing the FastAPI backend application and the Streamlit frontend, containerizing them with Docker, and deploying them to Google Cloud Run. He also set up the CI/CD pipeline using Google Cloud Build to automate the build and deployment processes of them. Additionally, he contributed to writing integration and load tests for the API.
+>Student s253749 focused on GCP. This included creating a Google Cloud Storage bucket, implementing the DVC connection, managing IAM and the service account, and triggering workflows in Google Cloud Build. Also adapted the data.py file so that the .jpg images could be converted to tensors
+>We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot and Codex to help write some of our code.
