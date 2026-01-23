@@ -479,9 +479,26 @@ with clear logs and repeatable runs that fit our project well.
 >
 > Answer:
 
+>The biggest struggles were around cloud infrastructure, reproducibility, and model performance. Setting up CI/CD with
+Cloud Build + Cloud Run required careful IAM/service‑account permissions and secret handling. We initially embedded too
+much config in images; we later moved credentials to mounted files and .env variables to avoid leaking secrets.
+Cloud Run also exposed resource constraints: the backend crashed with 512MB RAM, so we increased to 2GB and adjusted
+container startup. DVC was useful locally, but in cloud containers dvc pull was slow and required git metadata, so for
+some runs we read directly from GCS using service‑account credentials. This added work to keep data versioning and
+outputs consistent across environments.
 
->One of the main problems was setting up the CI/CD pipeline. We encountered several issues with permissions, authentication and configurations in Google Cloud Build and Cloud Run.
-During deployment of frontend and backend services to Cloud Run, we faced challenges related to memory allocation and service accessibility. Initially, the backend service was allocated only 512MB of memory, which proved insufficient for loading the machine learning model, leading to crashes. We resolved this by increasing the memory allocation to 2GB, ensuring stable operation.
+>Experiment tracking and artifacts were another time sink. We invested time in wiring W&B (artifacts/collections,
+job types, registry), Loguru, and Hydra outputs so that metrics, configs, and model.pth were all traceable. Getting
+profiler outputs (TensorBoard + Snakeviz) into the same run folders and bucket also took iteration. On the modeling
+side, the dataset is challenging (MRI slices with varying zoom/angles), and even with pretrained backbones we saw
+overfitting and modest test accuracy. We considered cross‑validation but stuck to a hold‑out split due to time and
+compute limits (local CPU training and limited GPU availability in Vertex AI). Sweeps in Vertex AI sometimes failed
+due to RAM/GPU availability or long startup times, so we constrained sweep ranges and used smaller batches/epochs.
+
+>We overcame these issues by adding multiple container variants for local vs cloud runs, standardizing configs with
+Hydra, improving CI workflows with caching and OS matrices, and iterating on deployment resources and data access
+paths. Overall, the time was split between cloud permissions/setup, experiment plumbing, and stabilizing training
+performance.
 
 ### Question 31
 
@@ -495,6 +512,9 @@ During deployment of frontend and backend services to Cloud Run, we faced challe
 >
 >Student s253749 focused on GCP. This included creating a Google Cloud Storage bucket, implementing the DVC connection, managing IAM and the service account, and triggering workflows in Google Cloud Build. Also adapted the data.py file so that the .jpg images could be converted to tensors
 >
->Student s254311 focused on wandb, hydra, profile, boilerplate, main.py, dockerfiles, debugging github actions.
+>Student s254311 focused on core ML code and experimentation: authored main/train/evaluate/visualize scripts, set up
+Hydra configs in configs/, implemented profiling hooks (TensorBoard/Snakeviz), logging (Loguru/W&B), and handled
+hyperparameter tuning and W&B artifacts/collections. Also created multiple Dockerfiles (local/cloud/CPU variants),
+Dev Container setup, and Vertex AI YAML configs; plus contributed to CI workflows.
 >
 >We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot and Codex to help write some of our code.
