@@ -388,7 +388,13 @@ https://github.com/CatalansMlops/MLOPS_G116/blob/main/dockerfiles/main.dockerfil
 >
 > Answer:
 
---- question 16 fill here ---
+> We mainly debugged with the VS Code debugger using launch configurations (default.json) for the train/evaluate/
+visualize entrypoints. We set breakpoints, inspected tensors and configs, and used step‑through execution when
+something failed. In practice we did not overuse interactive debugging; we relied more on clear logging (Loguru),
+assertions, and quick reruns, and only switched to the debugger for critical, hard‑to‑trace issues. We also used
+AI-assisted suggestions to speed up diagnosis when errors were non‑obvious.
+
+Profiling was more systematic. We added profiling hooks in most scripts and used the PyTorch profiler with TensorBoard to inspect hotspots and CPU utilization, plus Snakeviz for cProfile output. This was important when training for many epochs or running sweeps, where small inefficiencies are critical. Profiling results were logged with the run outputs to guide targeted optimizations.
 
 ## Working in the cloud
 
