@@ -400,8 +400,7 @@ Cloud Build is for building the images (via trigger) and pushing them to the Art
 >
 > Answer:
 
-> *We used the compute engine to run our Virtual Machines. We used instances with the following hardware: Nvidia T4 GPUs (3 GPUs granted) and we used them to train our models*
-> *using a custom container: ...*
+> *We used Compute Engine, which is the backbone of Google Cloud Platform, to run virtual machines for training our models. Specifically, we used e2-medium instances with 2 virtual CPUs and 4 GB of memory, running on x86‑64 architecture.We started these virtual machines using a custom container that included all the dependencies and code necessary for our project. This setup allowed us to have a reproducible environment for training, ensuring that all team members could run the same workloads consistently. Compute Engine gave us the flexibility to choose the VM type and resources based on our project requirements and to scale the environment as needed.*
 
 ### Question 19
 
@@ -543,7 +542,7 @@ Cloud Build is for building the images (via trigger) and pushing them to the Art
 >
 > Answer:
 
-We implemented a frontend for our API using Streamlit. The frontend allows users to easily upload images and view the model's predictions in a user-friendly interface.  Users can upload an image, and upon submission, the frontend sends the image to the backend API (classify endpoint) for classification. The predictions are then displayed on the same page, providing immediate feedback to the user. The frontend is also containerized and deployed in Google Cloud Run and is publicly accessible in https://frontend-277552599633.europe-west1.run.app.
+*We implemented a frontend for our API using Streamlit. The frontend allows users to easily upload images and view the model's predictions in a user-friendly interface.  Users can upload an image, and upon submission, the frontend sends the image to the backend API (classify endpoint) for classification. The predictions are then displayed on the same page, providing immediate feedback to the user. The frontend is also containerized and deployed in Google Cloud Run and is publicly accessible in https://frontend-277552599633.europe-west1.run.app.*
 
 ### Question 29
 
@@ -562,7 +561,7 @@ We implemented a frontend for our API using Streamlit. The frontend allows users
 
 ![Pipeline](figures/pipeline.png)
 
-We implemented a CI/CD pipeline with the `cloudbuild.yaml` file that automatically triggers builds and deployments whenever we do a push in the main branch of the GitHub repository. The Cloud Build service builds and pushes the Docker images to Google Cloud Artifact Registry and then it deploys the backend and frontend images to Google Cloud Run, making them publicly accessible.
+*We implemented a CI/CD pipeline with the `cloudbuild.yaml` file that automatically triggers builds and deployments whenever we do a push in the main branch of the GitHub repository. The Cloud Build service builds and pushes the Docker images to Google Cloud Artifact Registry and then it deploys the backend and frontend images to Google Cloud Run, making them publicly accessible.*
 
 ### Question 30
 
@@ -577,8 +576,8 @@ We implemented a CI/CD pipeline with the `cloudbuild.yaml` file that automatical
 > Answer:
 
 TO DO: completaaar(feel free de borrar el que vulgueu)
-One of the main problems was setting up the CI/CD pipeline. We encountered several issues with permissions, authentication and configurations in Google Cloud Build and Cloud Run.
-During deployment of frontend and backend services to Cloud Run, we faced challenges related to memory allocation and service accessibility. Initially, the backend service was allocated only 512MB of memory, which proved insufficient for loading the machine learning model, leading to crashes. We resolved this by increasing the memory allocation to 2GB, ensuring stable operation.
+*One of the main problems was setting up the CI/CD pipeline. We encountered several issues with permissions, authentication and configurations in Google Cloud Build and Cloud Run.
+During deployment of frontend and backend services to Cloud Run, we faced challenges related to memory allocation and service accessibility. Initially, the backend service was allocated only 512MB of memory, which proved insufficient for loading the machine learning model, leading to crashes. We resolved this by increasing the memory allocation to 2GB, ensuring stable operation.*
 
 ### Question 31
 
@@ -596,4 +595,4 @@ During deployment of frontend and backend services to Cloud Run, we faced challe
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
-Student s253742 focused on the deployment aspect of the project. This included writing the FastAPI backend application and the Streamlit frontend, containerizing them with Docker, and deploying them to Google Cloud Run. He also set up the CI/CD pipeline using Google Cloud Build to automate the build and deployment processes of them. Additionally, he contributed to writing integration and load tests for the API.
+*Student s253742 focused on the deployment aspect of the project. This included writing the FastAPI backend application and the Streamlit frontend, containerizing them with Docker, and deploying them to Google Cloud Run. He also set up the CI/CD pipeline using Google Cloud Build to automate the build and deployment processes of them. Additionally, he contributed to writing integration and load tests for the API.*
