@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM python:3.12-slim AS base
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04 AS base
 
 ARG GOOGLE_CLOUD_PROJECT
 ENV GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
@@ -10,10 +10,13 @@ ENV WANDB_MODE=online
 ENV WANDB_COLLECTION_MAIN=mlops_g116-main-models
 ENV WANDB_COLLECTION_MAIN_EVAL=mlops_g116-main-evals
 ENV DVC_CACHE_DIR=/tmp/dvc-cache
+ENV PYTHONPATH=/app/src
 
 RUN apt update && \
-    apt install --no-install-recommends -y build-essential gcc && \
+    apt install --no-install-recommends -y build-essential gcc python3 python3-pip && \
     apt clean && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 WORKDIR /app
 
@@ -21,15 +24,15 @@ COPY src src/
 COPY configs configs/
 COPY .dvc/config .dvc/config
 COPY data/*.dvc data/
-COPY requirements.txt requirements.txt
+COPY requirements_GPU.txt requirements_GPU.txt
 COPY README.md README.md
 COPY pyproject.toml pyproject.toml
 COPY dockerfiles/main_entrypoint.sh /usr/local/bin/main_entrypoint.sh
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt --verbose
+    python3 -m pip install -r requirements_GPU.txt --verbose
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install . --no-deps --verbose
+    python3 -m pip install . --no-deps --verbose
 RUN dvc config core.no_scm true
 
 RUN chmod +x /usr/local/bin/main_entrypoint.sh

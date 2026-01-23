@@ -1,12 +1,15 @@
 # syntax=docker/dockerfile:1.4
 FROM python:3.12-slim AS base
 
+ARG GOOGLE_CLOUD_PROJECT
+ENV GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
 ENV WANDB_PROJECT=mlops_g116
 ENV WANDB_ENTITY=sergi-luponsantacana-danmarks-tekniske-universitet-dtu
 ENV WANDB_REGISTRY_ENTITY=sergi-luponsantacana-danmarks-tekniske-universitet-dtu-org
 ENV WANDB_MODE=online
-ENV WANDB_REGISTRY=wandb-registry-mlops_g116
-ENV WANDB_COLLECTION_VISUALIZE=mlops_g116-visualize-local
+ENV WANDB_COLLECTION_MAIN=mlops_g116-main-models
+ENV WANDB_COLLECTION_MAIN_EVAL=mlops_g116-main-evals
+ENV DVC_CACHE_DIR=/tmp/dvc-cache
 
 RUN apt update && \
     apt install --no-install-recommends -y build-essential gcc && \
@@ -16,17 +19,18 @@ WORKDIR /app
 
 COPY src src/
 COPY configs configs/
-COPY models/model.pth models/model.pth
-COPY data/processed data/processed
-COPY requirements.txt requirements.txt
+COPY .dvc/config .dvc/config
+COPY data/*.dvc data/
+COPY requirements_GPU.txt requirements_GPU.txt
 COPY README.md README.md
 COPY pyproject.toml pyproject.toml
-COPY dockerfiles/visualize_entrypoint.sh /usr/local/bin/visualize_entrypoint.sh
+COPY dockerfiles/main_entrypoint.sh /usr/local/bin/main_entrypoint.sh
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt --verbose
+    pip install -r requirements_GPU.txt --verbose
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install . --no-deps --verbose
+RUN dvc config core.no_scm true
 
-RUN chmod +x /usr/local/bin/visualize_entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/visualize_entrypoint.sh"]
+RUN chmod +x /usr/local/bin/main_entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/main_entrypoint.sh"]
