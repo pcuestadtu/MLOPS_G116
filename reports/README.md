@@ -128,10 +128,6 @@ will check the repositories and the code to verify your answers.
 ### Question 2
 > **Enter the study number for each member in the group**
 >
-> Example:
->
-> *sXXXXXX, sXXXXXX, sXXXXXX*
->
 > Answer:
 
 > s254311, s253742, s253749
@@ -139,12 +135,6 @@ will check the repositories and the code to verify your answers.
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
 > **which did you use and how did they help you complete the project?**
->
-> Recommended answer length: 0-200 words.
->
-> Example:
-> *We used the third-party framework ... in our project. We used functionality ... and functionality ... from the*
-> *package to do ... and ... in our project*.
 >
 > Answer:
 
@@ -160,11 +150,6 @@ will check the repositories and the code to verify your answers.
 > **Explain how you managed dependencies in your project? Explain the process a new team member would have to go**
 > **through to get an exact copy of your environment.**
 >
-> Recommended answer length: 100-200 words
->
-> Example:
-> *We used ... for managing our dependencies. The list of dependencies was auto-generated using ... . To get a*
-> *complete copy of our development environment, one would have to run the following commands*
 >
 > Answer:
 
@@ -175,12 +160,6 @@ will check the repositories and the code to verify your answers.
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
 > **code. What did you fill out? Did you deviate from the template in some way?**
 >
-> Recommended answer length: 100-200 words
->
-> Example:
-> *From the cookiecutter template we have filled out the ... , ... and ... folder. We have removed the ... folder*
-> *because we did not use any ... in our project. We have added an ... folder that contains ... for running our*
-> *experiments.*
 >
 > Answer:
 
@@ -191,11 +170,6 @@ will check the repositories and the code to verify your answers.
 > **Did you implement any rules for code quality and format? What about typing and documentation? Additionally,**
 > **explain with your own words why these concepts matters in larger projects.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We used ... for linting and ... for formatting. We also used ... for typing and ... for documentation. These*
-> *concepts are important in larger projects because ... . For example, typing ...*
 >
 > Answer:
 
@@ -210,11 +184,6 @@ will check the repositories and the code to verify your answers.
 
 > **How many tests did you implement and what are they testing in your code?**
 >
-> Recommended answer length: 50-100 words.
->
-> Example:
-> *In total we have implemented X tests. Primarily we are testing ... and ... as these the most critical parts of our*
-> *application but also ... .*
 >
 > Answer:
 
@@ -225,26 +194,16 @@ will check the repositories and the code to verify your answers.
 > **What is the total code coverage (in percentage) of your code? If your code had a code coverage of 100% (or close**
 > **to), would you still trust it to be error free? Explain you reasoning.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *The total code coverage of code is X%, which includes all our source code. We are far from 100% coverage of our **
-> *code and even if we were then...*
 >
 > Answer:
 
-Our total coverage is 58% (619 misses out of 1479 statements). The low overall number is mainly driven by the large `main.py` (25%) and `train.py` (21%), which include many branches for profiling, logging, cloud uploads, and W&B setup that are hard to exercise in unit tests. Most other modules are above ~75%, with several in the 90% range (backend, frontend, data_importfromcloud, model, registry_download). We cover all key files, which is valuable even if the aggregate is lower. We generate this with the Invoke task `invoke coverage`. We attempted to upload coverage reports to Codecov, but it was costly/complicated for our setup, so we kept local reports. Even with higher coverage we would not trust the system to be error‑free, since tests reduce risk but cannot cover every runtime or data edge case.
+>Our total coverage is 58% (619 misses out of 1479 statements). The low overall number is mainly driven by the large `main.py` (25%) and `train.py` (21%), which include many branches for profiling, logging, cloud uploads, and W&B setup that are hard to exercise in unit tests. Most other modules are above ~75%, with several in the 90% range (backend, frontend, data_importfromcloud, model, registry_download). We cover all key files, which is valuable even if the aggregate is lower. We generate this with the Invoke task `invoke coverage`. We attempted to upload coverage reports to Codecov, but it was costly/complicated for our setup, so we kept local reports. Even with higher coverage we would not trust the system to be error‑free, since tests reduce risk but cannot cover every runtime or data edge case.
 
 ### Question 9
 
 > **Did you workflow include using branches and pull requests? If yes, explain how. If not, explain how branches and**
 > **pull request can help improve version control.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We made use of both branches and PRs in our project. In our group, each member had an branch that they worked on in*
-> *addition to the main branch. To merge code we ...*
 >
 > Answer:
 
@@ -256,14 +215,6 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 > **Did you use DVC for managing data in your project? If yes, then how did it improve your project to have version**
 > **control of your data. If no, explain a case where it would be beneficial to have version control of your data.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-
-
-*We did make use of DVC in the following way: ... . In the end it helped us in ... for controlling ... part of our*
-> *pipeline*
-
 > Answer:
 
 >Yes, we used DVC to manage the data in our project. DVC allowed us to version control large datasets without storing them directly in Git, which would have been inefficient given the size of the data. By storing the raw dataset in a cloud storage bucket and tracking it through DVC, we maintained a reproducible link between versions of the data and the corresponding code. This improved the reliability of the project, as each experiment or model could be traced to the exact dataset used. DVC enabled efficient collaboration among team members by allowing quick and consistent data synchronization using commands such as -dvc pull-. This ensured that all contributors worked with the same data version, reduced inconsistencies across environments, and simplified the setup process when cloning the repository. In containers (Docker/Cloud Run) we avoided dvc push because it requires git metadata and adding `.dvc` files, which is brittle/inefficient inside images. For non data folders like `outputs/` (run artifacts already stored in the bucket) we used direct GCS uploads instead. Locally we used personal credentials, while CI/containers used a service account to grant least privilege access to the bucket; this was essential to automate pulls/uploads and avoid manual logins.
@@ -275,12 +226,6 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 > **linting, etc.)? Do you test multiple operating systems, Python  version etc. Do you make use of caching? Feel free**
 > **to insert a link to one of your GitHub actions workflow.**
 >
-> Recommended answer length: 200-300 words.
->
-> Example:
-> *We have organized our continuous integration into 3 separate files: one for doing ..., one for running ... testing*
-> *and one for running ... . In particular for our ..., we used ... .An example of a triggered workflow can be seen*
-> *here: <weblink>*
 >
 > Answer:
 
@@ -302,11 +247,6 @@ Our total coverage is 58% (619 misses out of 1479 statements). The low overall n
 > **How did you configure experiments? Did you make use of config files? Explain with coding examples of how you would**
 > **run a experiment.**
 >
-> Recommended answer length: 50-100 words.
->
-> Example:
-> *We used a simple argparser, that worked in the following way: Python  my_script.py --lr 1e-3 --batch_size 25*
->
 > Answer:
 
 >We configured experiments with Hydra and the `configs/` tree. `main.py`, `train.py`, `evaluate.py`, and
@@ -318,11 +258,6 @@ uses `instantiate` targets. `evaluate.yaml` and `visualize.yaml` redirect to `ev
 > **Reproducibility of experiments are important. Related to the last question, how did you secure that no information**
 > **is lost when running experiments and that your experiments are reproducible?**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We made use of config files. Whenever an experiment is run the following happens: ... . To reproduce an experiment*
-> *one would have to do ...*
 >
 > Answer:
 
@@ -336,11 +271,6 @@ uses `instantiate` targets. `evaluate.yaml` and `visualize.yaml` redirect to `ev
 > **inspiration from [this figure](figures/wandb.png). Explain what metrics you are tracking and why they are**
 > **important.**
 >
-> Recommended answer length: 200-300 words + 1 to 3 screenshots.
->
-> Example:
-> *As seen in the first image when have tracked ... and ... which both inform us about ... in our experiments.*
-> *As seen in the second image we are also tracking ... and ...*
 >
 > Answer:
 
@@ -356,11 +286,6 @@ registry, tying deployment to a versioned artifact and ensuring traceability fro
 > **Docker is an important tool for creating containerized applications. Explain how you used docker in your**
 > **experiments/project? Include how you would run your docker images and include a link to one of your docker files.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *For our project we developed several images: one for training, inference and deployment. For example to run the*
-> *training docker image: `docker run trainer:latest lr=1e-3 batch_size=64`. Link to docker file: <weblink>*
 >
 > Answer:
 
@@ -370,7 +295,7 @@ We store secrets in `.env` (e.g., `WANDB_API_KEY`) and, when needed, mount a ser
 `GOOGLE_APPLICATION_CREDENTIALS` so containers can access GCS/DVC or Vertex AI. We also run Vertex AI jobs using
 `configs/vertex/*.yaml` for CPU/GPU training and sweeps. Docker gives consistent environments across laptops and cloud.
 
-Link to Dockerfile:
+>Link to Dockerfile:
 ```
 https://github.com/CatalansMlops/MLOPS_G116/blob/main/dockerfiles/main.dockerfile
 ```
@@ -380,11 +305,6 @@ https://github.com/CatalansMlops/MLOPS_G116/blob/main/dockerfiles/main.dockerfil
 > **When running into bugs while trying to run your experiments, how did you perform debugging? Additionally, did you**
 > **try to profile your code or do you think it is already perfect?**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *Debugging method was dependent on group member. Some just used ... and others used ... . We did a single profiling*
-> *run of our main code at some point that showed ...*
 >
 > Answer:
 
@@ -394,7 +314,7 @@ something failed. In practice we did not overuse interactive debugging; we relie
 assertions, and quick reruns, and only switched to the debugger for critical, hard‑to‑trace issues. We also used
 AI-assisted suggestions to speed up diagnosis when errors were non‑obvious.
 
-Profiling was more systematic. We added profiling hooks in most scripts and used the PyTorch profiler with TensorBoard to inspect hotspots and CPU utilization, plus Snakeviz for cProfile output. This was important when training for many epochs or running sweeps, where small inefficiencies are critical. Profiling results were logged with the run outputs to guide targeted optimizations.
+>Profiling was more systematic. We added profiling hooks in most scripts and used the PyTorch profiler with TensorBoard to inspect hotspots and CPU utilization, plus Snakeviz for cProfile output. This was important when training for many epochs or running sweeps, where small inefficiencies are critical. Profiling results were logged with the run outputs to guide targeted optimizations.
 
 ## Working in the cloud
 
@@ -404,29 +324,20 @@ Profiling was more systematic. We added profiling hooks in most scripts and used
 
 > **List all the GCP services that you made use of in your project and shortly explain what each service does?**
 >
-> Recommended answer length: 50-200 words.
->
-> Example:
-> *We used the following two services: Engine and Bucket. Engine is used for... and Bucket is used for...*
 >
 > Answer:
 
-> We used the following Google Cloud services: Cloud Build, Artifact Registry, Cloud Run, Compute Engine, Vertex AI and Cloud Storage (Bucket). Cloud Build handles building Docker images whenever a trigger occurs and pushes them to Artifact Registry, where the containers are securely stored. Cloud Run then deploys and runs these containers, making the application publicly accessible. Compute Engine and Vertex AI are used to train our machine learning models, leveraging CPU resources to increase training speed. Finally, Cloud Storage (Bucket) is used to store the dataset in the cloud, ensuring easy access, version control and scalability. Together, these services provide a fully automated, efficient, and reliable pipeline for building, deploying and training our application in the cloud.
+> We used the following Google Cloud services: Cloud Build, Artifact Registry, Cloud Run, Compute Engine, Vertex AI and Cloud Storage (Bucket). Cloud Build handles building Docker images whenever a trigger occurs and pushes them to Artifact Registry, where the containers are securely stored. For this tool, we also programmed some triggers linked to the git repo that automatically conducts the docker images commands (build, push, deploy) by means of the cloudbuild.yaml file and is activated manually or whenever we do a git push on the main branch. Cloud Run then deploys and runs these containers, making the application publicly accessible. Compute Engine and Vertex AI are used to train our machine learning models, leveraging CPU and GPU resources to increase training speed. Finally, Cloud Storage (Bucket) is used to store the dataset in the cloud, ensuring easy access, version control and scalability. Together, these services provide a fully automated, efficient, and reliable pipeline for building, deploying and training our application in the cloud.
 
 ### Question 18
 
 > **The backbone of GCP is the Compute engine. Explained how you made use of this service and what type of VMs**
 > **you used?**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We used the compute engine to run our ... . We used instances with the following hardware: ... and we started the*
-> *using a custom container: ...*
 >
 > Answer:
 
-> We used Compute Engine, which is the backbone of Google Cloud Platform, to run virtual machines for training our models. Specifically, we used e2-medium instances with 2 virtual CPUs and 4 GB of memory, running on x86‑64 architecture.We started these virtual machines using a custom container that included all the dependencies and code necessary for our project. This setup allowed us to have a reproducible environment for training, ensuring that all team members could run the same workloads consistently. Compute Engine gave us the flexibility to choose the VM type and resources based on our project requirements and to scale the environment as needed.
+> We created a Compute Engine VM instance (x86‑64, 4 GB RAM, 2 GPUs) mainly as infrastructure support, but most of our ML training and deployment work was done in Vertex AI, which is more purpose‑built for ML/DL workloads. For Vertex AI jobs we selected a machine type n1-highmem-16 and an NVIDIA Tesla T4 (accelerator_count=1) to ensure enough RAM and GPU capacity for training and sweeps. The Compute Engine VM was still valuable because it provides a reproducible, isolated environment with stable dependencies, predictable hardware, and traceable configuration. It also let us work from our local machine while issuing Vertex AI commands (and other GCP tooling) reliably from a controlled environment, which reduced local setup friction and helped keep runs consistent across team members.
 
 ### Question 19
 
@@ -463,15 +374,18 @@ Profiling was more systematic. We added profiling hooks in most scripts and used
 > **Did you manage to train your model in the cloud using either the Engine or Vertex AI? If yes, explain how you did**
 > **it. If not, describe why.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We managed to train our model in the cloud using the Engine. We did this by ... . The reason we choose the Engine*
-> *was because ...*
 >
 > Answer:
 
->We managed to train our model in the cloud using Vertex AI. To do this, we created an actionable trigger (vertex_ai_train.yaml) that could be executed manually from Google Cloud Build. Once the container was pushed to the Artifact Registry, we started training our model. We chose Vertex AI over using a Compute Engine because Vertex AI provides a higher-level, managed environment specifically designed for machine learning workflows. It simplifies tasks such as resource provisioning, scaling, experiment tracking and monitoring. Unlike Compute Engine, where we would have had to manually configure virtual machines, install dependencies, and manage GPU resources, Vertex AI allowed us to train models quickly and reliably with minimal setup. This made the training process faster, less error-prone, and easier to reproduce, which was particularly beneficial for our team workflow.
+>We trained in Vertex AI using containers built in Cloud Build and pushed to Artifact Registry. The training job is
+defined in configs/vertex/vertex_ai_train.yaml, with resource settings in configs/vertex/vertex.yaml and sweeps in
+configs/vertex/vertex_sweep.yaml. Hyperparameters are supplied via Hydra configs and overrides, so we can adjust
+model, optimizer, and training settings (or run sweeps) without rebuilding the image. This kept the image stable
+while we experimented with learning rate, batch size, and model backbones. We did face practical challenges: GPU
+availability and RAM limits affected sweep runs, and service‑account permissions had to be configured carefully for
+GCS/DVC access. DVC pulls were slow inside Vertex jobs, so we changed some runs to read directly from the bucket using
+credentials instead of pulling data into the container. Despite these hurdles, Vertex AI provided a managed workflow
+with clear logs and repeatable runs that fit our project well.
 
 ## Deployment
 
@@ -480,28 +394,15 @@ Profiling was more systematic. We added profiling hooks in most scripts and used
 > **Did you manage to write an API for your model? If yes, explain how you did it and if you did anything special. If**
 > **not, explain how you would do it.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We did manage to write an API for our model. We used FastAPI to do this. We did this by ... . We also added ...*
-> *to the API to make it more ...*
->
 > Answer:
 
-We developed an API for our model using FastAPI. The API consists of a root endpoint to test if the service is running and a /classify endpoint that takes in an image and returns the predictions of the best-performing trained model saved in models/model.pth. We implemented an asynchronous lifespan context manager (app = FastAPI(lifespan=lifespan)) to optimize the API's efficiency. This architectural pattern decouples the resource-heavy initialization logic (loading the model) from the request processing logic. Without this, the server would potentially reload the model weights from the disk for every incoming request, causing high latency. By using lifespan, we ensure the model is loaded into memory exactly once when the server starts up.
+>We developed an API for our model using FastAPI. The API consists of a root endpoint to test if the service is running and a /classify endpoint that takes in an image and returns the predictions of the best-performing trained model saved in models/model.pth. We implemented an asynchronous lifespan context manager (app = FastAPI(lifespan=lifespan)) to optimize the API's efficiency. This architectural pattern decouples the resource-heavy initialization logic (loading the model) from the request processing logic. Without this, the server would potentially reload the model weights from the disk for every incoming request, causing high latency. By using lifespan, we ensure the model is loaded into memory exactly once when the server starts up.
 
 
 ### Question 24
 
 > **Did you manage to deploy your API, either in locally or cloud? If not, describe why. If yes, describe how and**
 > **preferably how you invoke your deployed service?**
->
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *For deployment we wrapped our model into application using ... . We first tried locally serving the model, which*
-> *worked. Afterwards we deployed it in the cloud, using ... . To invoke the service an user would call*
-> *`curl -X POST -F "file=@file.json"<weburl>`*
 >
 > Answer:
 
@@ -512,11 +413,6 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 > **Did you perform any unit testing and load testing of your API? If yes, explain how you did it and what results for**
 > **the load testing did you get. If not, explain how you would do it.**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *For unit testing we used ... and for load testing we used ... . The results of the load testing showed that ...*
-> *before the service crashed.*
 >
 > Answer:
 
@@ -527,12 +423,6 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 
 > **Did you manage to implement monitoring of your deployed model? If yes, explain how it works. If not, explain how**
 > **monitoring would help the longevity of your application.**
->
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *We did not manage to implement monitoring. We would like to have monitoring implemented such that over time we could*
-> *measure ... and ... that would inform us about this ... behaviour of our application.*
 >
 > Answer:
 
@@ -547,12 +437,6 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 > **How many credits did you end up using during the project and what service was most expensive? In general what do**
 > **you think about working in the cloud?**
 >
-> Recommended answer length: 100-200 words.
->
-> Example:
-> *Group member 1 used ..., Group member 2 used ..., in total ... credits was spend during development. The service*
-> *costing the most was ... due to ... . Working in the cloud was ...*
->
 > Answer:
 
 > In total, we used kr130 out of kr8,237 available for our project. The most expensive service was Container Registry Vulnerability Scanning, which cost kr104, followed by Vertex AI and Cloud Run, each costing kr6, and Compute Engine and Artifact Registry, each costing kr4. Overall, working in the cloud was a very positive experience. It provided scalability, flexibility, and easy access to powerful computing resources without the need to maintain physical hardware. Services like Vertex AI and Cloud Run simplified deployment, automated resource management and allowed us to focus on developing and testing our model rather than managing infrastructure. However, there are some drawbacks. Cloud costs can increase quickly if resources are not managed carefully and understanding all the services and their configurations can be overwhelming at first. Despite these challenges, the advantages of speed, reproducibility, collaboration and low maintenance made cloud computing an excellent choice for our project.
@@ -563,11 +447,6 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 > **a frontend for your API, use extra version control features, a drift detection service, a kubernetes cluster etc.**
 > **If yes, explain what you did and why.**
 >
-> Recommended answer length: 0-200 words.
->
-> Example:
-> *We implemented a frontend for our API. We did this because we wanted to show the user ... . The frontend was*
-> *implemented using ...*
 >
 > Answer:
 
@@ -578,13 +457,6 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 > **Include a figure that describes the overall architecture of your system and what services that you make use of.**
 > **You can take inspiration from [this figure](figures/overview.png). Additionally, in your own words, explain the**
 > **overall steps in figure.**
->
-> Recommended answer length: 200-400 words
->
-> Example:
->
-> *The starting point of the diagram is our local setup, where we integrated ... and ... and ... into our code.*
-> *Whenever we commit code and push to GitHub, it auto triggers ... and ... . From there the diagram shows ...*
 >
 > Answer:
 
@@ -605,11 +477,6 @@ We developed an API for our model using FastAPI. The API consists of a root endp
 > **Discuss the overall struggles of the project. Where did you spend most time and what did you do to overcome these**
 > **challenges?**
 >
-> Recommended answer length: 200-400 words.
->
-> Example:
-> *The biggest challenges in the project was using ... tool to do ... . The reason for this was ...*
->
 > Answer:
 
 
@@ -622,16 +489,12 @@ During deployment of frontend and backend services to Cloud Run, we faced challe
 > **make sure all members contributed actively to the project. Additionally, state if/how you have used generative AI**
 > **tools in your project.**
 >
-> Recommended answer length: 50-300 words.
->
-> Example:
-> *Student sXXXXXX was in charge of developing of setting up the initial cookie cutter project and developing of the*
-> *docker containers for training our applications.*
-> *Student sXXXXXX was in charge of training our models in the cloud and deploying them afterwards.*
-> *All members contributed to code by...*
-> *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
 >Student s253742 focused on the deployment aspect of the project. This included writing the FastAPI backend application and the Streamlit frontend, containerizing them with Docker, and deploying them to Google Cloud Run. He also set up the CI/CD pipeline using Google Cloud Build to automate the build and deployment processes of them. Additionally, he contributed to writing integration and load tests for the API.
+>
 >Student s253749 focused on GCP. This included creating a Google Cloud Storage bucket, implementing the DVC connection, managing IAM and the service account, and triggering workflows in Google Cloud Build. Also adapted the data.py file so that the .jpg images could be converted to tensors
+>
+>Student s254311 focused on wandb, hydra, profile, boilerplate, main.py, dockerfiles, debugging github actions.
+>
 >We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot and Codex to help write some of our code.
